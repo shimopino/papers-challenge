@@ -14,9 +14,11 @@ date: YYYY-MM-DD
 categories: CV MLP Others
 ---
 
-## 論文へのリンク
+### 論文へのリンク
 
-## 著者・所属機関
+### 著者・所属機関
+
+### 投稿日時（YYYY-MM-DD）
 
 ## 1. どんなもの？
 
