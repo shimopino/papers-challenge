@@ -1,0 +1,7 @@
+.DS_Store
+*~
+*.bak
+*.yml.orig
+*.erb.orig
+tmp/*
+pytorch-paper-book-pdf/*
