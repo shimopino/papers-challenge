@@ -19,5 +19,5 @@ one concept paper
 
 survey paper
 
-- [(arXiv:1906.01529) Generative Adversarial Networks in Computer Vision: A Survey and Taxonomy](https://arxiv.org/abs/1906.01529)
-- [(arXiv:1910.09399) A Survey and Taxonomy of Adversarial Neural Networks for Text-to-Image Synthesis](https://arxiv.org/abs/1910.09399)
+- [[arXiv:1906.01529] Generative Adversarial Networks in Computer Vision: A Survey and Taxonomy](https://arxiv.org/abs/1906.01529)
+- [[arXiv:1910.09399] A Survey and Taxonomy of Adversarial Neural Networks for Text-to-Image Synthesis](https://arxiv.org/abs/1910.09399)
