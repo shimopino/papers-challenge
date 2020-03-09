@@ -9,6 +9,7 @@
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
     - [Data Augmentation](#data-augmentation)
+    - [Anomaly Detection](#anomaly-detection)
 <!-- /TOC -->
 
 ---
@@ -50,4 +51,8 @@
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
-- [[1905.04899] CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features](https://arxiv.org/abs/1905.04899)
+- [[arXiv:1905.04899] CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features](https://arxiv.org/abs/1905.04899)
+
+<a id="markdown-anomaly-detection" name="anomaly-detection"></a>
+### Anomaly Detection
+- [[arXiv:1903.08550] OCGAN: One-class Novelty Detection Using GANs with Constrained Latent Representations](https://arxiv.org/abs/1903.08550)
