@@ -35,7 +35,7 @@
 - [[arXiv:2003.02683] Image Generation from Freehand Scene Sketches](https://arxiv.org/abs/2003.02683)
 
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
-### Image-to-Image Translation
+### Text-to-Image Translation
 
 - [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
 
