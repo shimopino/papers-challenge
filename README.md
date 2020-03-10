@@ -5,6 +5,7 @@
   - [Generative Adversarial Networks](#generative-adversarial-networks)
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
+    - [Text-to-Image Translation](#text-to-image-translation)
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
@@ -32,6 +33,11 @@
 - [[arXiv:2002.05638] GANILLA: Generative Adversarial Networks for Image to Illustration Translation](https://arxiv.org/abs/2002.05638)
 - [[arXiv:2003.00187] Augmented Cyclic Consistency Regularization for Unpaired Image-to-Image Translation](https://arxiv.org/abs/2003.00187)
 - [[arXiv:2003.02683] Image Generation from Freehand Scene Sketches](https://arxiv.org/abs/2003.02683)
+
+<a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
+### Image-to-Image Translation
+
+- [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
 
 <a id="markdown-disentanglement" name="disentanglement"></a>
 ### Disentanglement
