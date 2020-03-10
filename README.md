@@ -33,6 +33,7 @@
 - [[arXiv:2002.05638] GANILLA: Generative Adversarial Networks for Image to Illustration Translation](https://arxiv.org/abs/2002.05638)
 - [[arXiv:2003.00187] Augmented Cyclic Consistency Regularization for Unpaired Image-to-Image Translation](https://arxiv.org/abs/2003.00187)
 - [[arXiv:2003.02683] Image Generation from Freehand Scene Sketches](https://arxiv.org/abs/2003.02683)
+- [[arXiv:2003.00273] Reusing Discriminators for Encoding Towards Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2003.00273)
 
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
 ### Text-to-Image Translation
