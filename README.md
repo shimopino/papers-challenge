@@ -40,6 +40,7 @@
 ### Text-to-Image Translation
 
 - [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
+- [[arXiv:1904.01480] Semantics Disentangling for Text-to-Image Generation](https://arxiv.org/abs/1904.01480)
 
 <a id="markdown-super-resolution" name="super-resolution"></a>
 ### Super-Resolution
