@@ -6,6 +6,7 @@
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
+    - [Super-Resolution](super-resolution")
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
@@ -39,6 +40,11 @@
 ### Text-to-Image Translation
 
 - [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
+
+<a id="markdown-super-resolution" name="super-resolution"></a>
+### Super-Resolution
+
+- [[arXiv:2003.02365] Creating High Resolution Images with a Latent Adversarial Generator](https://arxiv.org/abs/2003.02365)
 
 <a id="markdown-disentanglement" name="disentanglement"></a>
 ### Disentanglement
