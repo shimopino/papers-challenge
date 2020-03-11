@@ -6,7 +6,7 @@
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
-    - [Super-Resolution](super-resolution")
+    - [Super-Resolution](#super-resolution")
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
