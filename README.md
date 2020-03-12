@@ -10,6 +10,7 @@
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
+    - [Convolution Architecture](#conv-arch)
     - [Data Augmentation](#data-augmentation)
     - [Anomaly Detection](#anomaly-detection)
 <!-- /TOC -->
@@ -62,6 +63,11 @@
 
 <a id="markdown-computer-vision" name="computer-vision"></a>
 ## Computer Vision
+
+<a id="markdown-conv-arch" name="conv-arch"></a>
+### Convolution Architecture
+
+- [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
