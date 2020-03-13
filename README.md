@@ -67,6 +67,7 @@
 <a id="markdown-conv-arch" name="conv-arch"></a>
 ### Convolution Architecture
 
+[[arXiv:1811.12231] ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness](https://arxiv.org/abs/1811.12231)
 - [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
