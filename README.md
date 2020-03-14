@@ -23,6 +23,7 @@
 <a id="markdown-image-generation" name="image-generation"></a>
 ### Image Generation
 
+- [[arXiv:1905.01164] SinGAN: Learning a Generative Model from a Single Natural Image](https://arxiv.org/abs/1905.01164)
 - [[arXiv:1912.11035] CNN-generated images are surprisingly easy to spot... for now](https://arxiv.org/abs/1912.11035)
 - [[arXiv:2002.12655] A U-Net Based Discriminator for Generative Adversarial Networks](https://arxiv.org/abs/2002.12655)
 
