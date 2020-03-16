@@ -41,6 +41,7 @@
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
 ### Text-to-Image Translation
 
+- [[arXiv:1612.03242] StackGAN: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks](https://arxiv.org/abs/1612.03242)
 - [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
 - [[arXiv:1904.01480] Semantics Disentangling for Text-to-Image Generation](https://arxiv.org/abs/1904.01480)
 
