@@ -7,6 +7,7 @@
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
     - [Super-Resolution](#super-resolution")
+    - [Denoising](#denoising")
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
@@ -52,6 +53,11 @@
 ### Super-Resolution
 
 - [[arXiv:2003.02365] Creating High Resolution Images with a Latent Adversarial Generator](https://arxiv.org/abs/2003.02365)
+
+<a id="markdown-denoising" name="denoising"></a>
+### Denoising
+
+- [[arXiv:2003.07849] Blur, Noise, and Compression Robust Generative Adversarial Networks](https://arxiv.org/abs/2003.07849)
 
 <a id="markdown-disentanglement" name="disentanglement"></a>
 ### Disentanglement
