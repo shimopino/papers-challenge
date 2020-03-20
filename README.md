@@ -11,6 +11,7 @@
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
   - [Computer Vision](#computer-vision)
+    - [Learning Strategy](#learn-strg)
     - [Convolution Architecture](#conv-arch)
     - [Data Augmentation](#data-augmentation)
     - [Anomaly Detection](#anomaly-detection)
@@ -74,6 +75,10 @@
 
 <a id="markdown-computer-vision" name="computer-vision"></a>
 ## Computer Vision
+
+<a id="markdown-learn-strg" name="learn-strg"></a>
+### Learning Strategy
+- [[arXiv:1911.09665] Adversarial Examples Improve Image Recognition](https://arxiv.org/abs/1911.09665)
 
 <a id="markdown-conv-arch" name="conv-arch"></a>
 ### Convolution Architecture
