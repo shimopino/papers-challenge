@@ -80,6 +80,7 @@
 
 - [[arXiv:1811.12231] ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness](https://arxiv.org/abs/1811.12231)
 - [[arXiv:1906.05909] Stand-Alone Self-Attention in Vision Models](https://arxiv.org/abs/1906.05909)
+- [[arXiv:1911.08432] Defective Convolutional Layers Learn Robust CNNs](https://arxiv.org/abs/1911.08432)
 - [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
