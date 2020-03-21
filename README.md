@@ -13,6 +13,7 @@
   - [Computer Vision](#computer-vision)
     - [Learning Strategy](#learn-strg)
     - [Convolution Architecture](#conv-arch)
+    - [Architecure Search](#arch-search)
     - [Data Augmentation](#data-augmentation)
     - [Anomaly Detection](#anomaly-detection)
 <!-- /TOC -->
@@ -87,6 +88,10 @@
 - [[arXiv:1906.05909] Stand-Alone Self-Attention in Vision Models](https://arxiv.org/abs/1906.05909)
 - [[arXiv:1911.08432] Defective Convolutional Layers Learn Robust CNNs](https://arxiv.org/abs/1911.08432)
 - [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
+
+<a id="markdown-arch-search" name="arch-search"></a>
+### Architecture Search
+- [[arXiv:1908.09791] Once-for-All: Train One Network and Specialize it for Efficient Deployment on Diverse Hardware Platforms](https://arxiv.org/abs/1908.09791)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
