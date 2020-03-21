@@ -10,6 +10,7 @@
     - [Denoising](#denoising)
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
+    - [GAN Architecute Search](#gan-arch-search)
   - [Computer Vision](#computer-vision)
     - [Learning Strategy](#learn-strg)
     - [Convolution Architecture](#conv-arch)
@@ -71,6 +72,10 @@
 
 - [[arXiv:1904.12848] Unsupervised Data Augmentation for Consistency Training](https://arxiv.org/abs/1904.12848)
 - [[arXiv:2002.04724] Improved Consistency Regularization for GAN](https://arxiv.org/abs/2002.04724)
+
+<a id="markdown-gan-arch-search" name="gan-arch-search"></a>
+### GAN Architecture Search
+- [[arXiv:2003.08936] GAN Compression: Efficient Architectures for Interactive Conditional GANs](https://arxiv.org/abs/2003.08936)
 
 ---
 
