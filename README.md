@@ -17,6 +17,8 @@
     - [Architecure Search](#arch-search)
     - [Data Augmentation](#data-augmentation)
     - [Anomaly Detection](#anomaly-detection)
+  - [Natural Language Processing](#nlp)
+    - [Transformers](#transformers)
 <!-- /TOC -->
 
 ---
@@ -105,3 +107,10 @@
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
 - [[arXiv:1903.08550] OCGAN: One-class Novelty Detection Using GANs with Constrained Latent Representations](https://arxiv.org/abs/1903.08550)
+
+<a id="markdown-nlp" name="nlp"></a>
+## Natural Language Processing
+
+<a id="markdown-transformers" name="transformers"></a>
+### Transformers
+- [[arXiv:2003.07845] Rethinking Batch Normalization in Transformers](https://arxiv.org/abs/2003.07845)
