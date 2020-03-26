@@ -115,3 +115,4 @@
 <a id="markdown-transformers" name="transformers"></a>
 ### Transformers
 - [[arXiv:2003.07845] Rethinking Batch Normalization in Transformers](https://arxiv.org/abs/2003.07845)
+- [[arXiv:2002.11794] Train Large, Then Compress: Rethinking Model Size for Efficient Training and Inference of Transformers](https://arxiv.org/abs/2002.11794)
