@@ -104,6 +104,7 @@
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
 - [[arXiv:1905.04899] CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features](https://arxiv.org/abs/1905.04899)
+- [[arXiv:1909.09148] Data Augmentation Revisited: Rethinking the Distribution Gap between Clean and Augmented Data](https://arxiv.org/abs/1909.09148)
 - [[arXiv:2002.11102] On Feature Normalization and Data Augmentation](https://arxiv.org/abs/2002.11102)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
