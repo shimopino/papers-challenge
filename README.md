@@ -49,7 +49,9 @@
 - [[arXiv:2003.02683] Image Generation from Freehand Scene Sketches](https://arxiv.org/abs/2003.02683)
 - [[arXiv:2003.00273] Reusing Discriminators for Encoding Towards Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2003.00273)
 - [[arXiv:2003.04858] Unpaired Image-to-Image Translation using Adversarial Consistency Loss](https://arxiv.org/abs/2003.04858)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/45)
 - [[arXiv:2003.07101] Synthesizing human-like sketches from natural images using a conditional convolutional decoder](https://arxiv.org/abs/2003.07101)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/44)
 
 
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
@@ -60,6 +62,7 @@
 - [[arXiv:1802.09178] Photographic Text-to-Image Synthesis with a Hierarchically-nested Adversarial Network](https://arxiv.org/abs/1802.09178)
 - [[arXiv:1904.01480] Semantics Disentangling for Text-to-Image Generation](https://arxiv.org/abs/1904.01480)
 - [[arXiv:2003.12137] Cycle Text-To-Image GAN with BERT](https://arxiv.org/abs/2003.12137)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/58)
 
 <a id="markdown-super-resolution" name="super-resolution"></a>
 ### Super-Resolution
@@ -70,6 +73,7 @@
 ### Denoising
 
 - [[arXiv:2003.07849] Blur, Noise, and Compression Robust Generative Adversarial Networks](https://arxiv.org/abs/2003.07849)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/47)
 
 <a id="markdown-disentanglement" name="disentanglement"></a>
 ### Disentanglement
@@ -88,6 +92,7 @@
 <a id="markdown-gan-arch-search" name="gan-arch-search"></a>
 ### GAN Architecture Search
 - [[arXiv:2003.08936] GAN Compression: Efficient Architectures for Interactive Conditional GANs](https://arxiv.org/abs/2003.08936)
+  - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/48)
 
 <a id="markdown-gan-survey" name="gan-survey"></a>
 ### Survey
@@ -117,6 +122,7 @@
 <a id="markdown-arch-search" name="arch-search"></a>
 ### Architecture Search
 - [[arXiv:1908.09791] Once-for-All: Train One Network and Specialize it for Efficient Deployment on Diverse Hardware Platforms](https://arxiv.org/abs/1908.09791)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/49)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
@@ -125,6 +131,7 @@
 - [[arXiv:1909.09148] Data Augmentation Revisited: Rethinking the Distribution Gap between Clean and Augmented Data](https://arxiv.org/abs/1909.09148)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/4)
 - [[arXiv:2002.11102] On Feature Normalization and Data Augmentation](https://arxiv.org/abs/2002.11102)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/51)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
@@ -137,4 +144,5 @@
 <a id="markdown-transformers" name="transformers"></a>
 ### Transformers
 - [[arXiv:2003.07845] Rethinking Batch Normalization in Transformers](https://arxiv.org/abs/2003.07845)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/50)
 - [[arXiv:2002.11794] Train Large, Then Compress: Rethinking Model Size for Efficient Training and Inference of Transformers](https://arxiv.org/abs/2002.11794)
