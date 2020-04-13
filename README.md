@@ -33,6 +33,8 @@
 - [[arXiv:1905.01164] SinGAN: Learning a Generative Model from a Single Natural Image](https://arxiv.org/abs/1905.01164)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/1)
 - [[arXiv:1912.11035] CNN-generated images are surprisingly easy to spot... for now](https://arxiv.org/abs/1912.11035)
+- [[arXiv:2002.10964] Freeze the Discriminator: a Simple Baseline for Fine-Tuning GANs](https://arxiv.org/abs/2002.10964)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/16)
 - [[arXiv:2002.12655] A U-Net Based Discriminator for Generative Adversarial Networks](https://arxiv.org/abs/2002.12655)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/17)
 - [[arXiv:2003.02567] GANwriting: Content-Conditioned Generation of Styled Handwritten Word Images](https://arxiv.org/abs/2003.02567)
