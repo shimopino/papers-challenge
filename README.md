@@ -158,3 +158,5 @@
 - [[arXiv:2003.07845] Rethinking Batch Normalization in Transformers](https://arxiv.org/abs/2003.07845)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/50)
 - [[arXiv:2002.11794] Train Large, Then Compress: Rethinking Model Size for Efficient Training and Inference of Transformers](https://arxiv.org/abs/2002.11794)
+- [[arXiv:2004.02984] MobileBERT: a Compact Task-Agnostic BERT for Resource-Limited Devices](https://arxiv.org/abs/2004.02984)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/80)
