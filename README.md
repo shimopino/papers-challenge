@@ -7,6 +7,7 @@
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
     - [Super-Resolution](#super-resolution)
+    - [Image Editting](#image-editting)
     - [Denoising](#denoising)
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
@@ -73,6 +74,12 @@
 ### Super-Resolution
 
 - [[arXiv:2003.02365] Creating High Resolution Images with a Latent Adversarial Generator](https://arxiv.org/abs/2003.02365)
+
+<a id="markdown-image-editting" name="image-editting"></a>
+### Image Editting
+
+- [[arXiv:2004.00049] In-Domain GAN Inversion for Real Image Editing](https://arxiv.org/abs/2004.00049)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/60)
 
 <a id="markdown-denoising" name="denoising"></a>
 ### Denoising
