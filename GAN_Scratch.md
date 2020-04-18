@@ -11,6 +11,6 @@
 - [[projection GAN] cGANs with Projection Discriminator](https://arxiv.org/abs/1802.05637)
 - [[SNGAN] Spectral Normalization for Generative Adversarial Networks](https://arxiv.org/abs/1802.05957)
 - [[PGGAN] Progressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196)
-- [[SAGAN] Self-Attention Generative Adversarial Networks]
+- [[SAGAN] Self-Attention Generative Adversarial Networks](https://arxiv.org/abs/1805.08318)
 
 - [Gradient descent GAN optimization is locally stable](https://arxiv.org/abs/1706.04156)
