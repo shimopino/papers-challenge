@@ -1,6 +1,6 @@
 # GAN: from zero to hero
 
-## Paper Reading Order
+## dev: Paper Reading Order
 
 - [[GAN] Generative Adversarial Networks](https://arxiv.org/abs/1406.2661)
 - [[advVB] Adversarial Variational Bayes: Unifying Variational Autoencoders and Generative Adversarial Networks](https://arxiv.org/abs/1701.04722)
