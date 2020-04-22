@@ -21,6 +21,7 @@
     - [Anomaly Detection](#anomaly-detection)
   - [Natural Language Processing](#nlp)
     - [Transformers](#transformers)
+    - [Survey](#nlp-survey)
 <!-- /TOC -->
 
 ---
@@ -160,3 +161,9 @@
 - [[arXiv:2002.11794] Train Large, Then Compress: Rethinking Model Size for Efficient Training and Inference of Transformers](https://arxiv.org/abs/2002.11794)
 - [[arXiv:2004.02984] MobileBERT: a Compact Task-Agnostic BERT for Resource-Limited Devices](https://arxiv.org/abs/2004.02984)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/80)
+    
+<a id="markdown-nlp-survey" name="nlp-survey"></a>
+### Survey
+
+- [[arXiv:2004.08900] The Cost of Training NLP Models: A Concise Overview](https://arxiv.org/abs/2004.08900)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/89)
