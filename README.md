@@ -39,6 +39,8 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/16)
 - [[arXiv:2002.12655] A U-Net Based Discriminator for Generative Adversarial Networks](https://arxiv.org/abs/2002.12655)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/17)
+- [[arXiv:2004.02088] Feature Quantization Improves GAN Training](https://arxiv.org/abs/2004.02088)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/62)
 - [[arXiv:2003.02567] GANwriting: Content-Conditioned Generation of Styled Handwritten Word Images](https://arxiv.org/abs/2003.02567)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/24)
 - [[arXiv:2004.03355] Inclusive GAN: Improving Data and Minority Coverage in Generative Models](https://arxiv.org/abs/2004.03355)
