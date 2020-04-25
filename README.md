@@ -41,8 +41,11 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/17)
 - [[arXiv:2003.02567] GANwriting: Content-Conditioned Generation of Styled Handwritten Word Images](https://arxiv.org/abs/2003.02567)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/24)
+- [[arXiv:2004.03355] Inclusive GAN: Improving Data and Minority Coverage in Generative Models](https://arxiv.org/abs/2004.03355)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/65)
 - [[arXiv:2004.05472] Autoencoding Generative Adversarial Networks](https://arxiv.org/abs/2004.05472)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/81)
+    
 
 <a id="markdown-image-to-image-translation" name="image-to-image-translation"></a>
 ### Image-to-Image Translation
