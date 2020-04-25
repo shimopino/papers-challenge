@@ -80,7 +80,7 @@
 ### Super-Resolution
 
 - [[arXiv:2003.02365] Creating High Resolution Images with a Latent Adversarial Generator](https://arxiv.org/abs/2003.02365)
-[[arXiv:2004.00448] Rethinking Data Augmentation for Image Super-resolution: A Comprehensive Analysis and a New Strategy](https://arxiv.org/abs/2004.00448)
+- [[arXiv:2004.00448] Rethinking Data Augmentation for Image Super-resolution: A Comprehensive Analysis and a New Strategy](https://arxiv.org/abs/2004.00448)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/64)
 
 <a id="markdown-image-editting" name="image-editting"></a>
