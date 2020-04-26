@@ -129,6 +129,8 @@
 ### Learning Strategy
 - [[arXiv:1911.09665] Adversarial Examples Improve Image Recognition](https://arxiv.org/abs/1911.09665)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/3)
+- [[arXiv:2004.11362] Supervised Contrastive Learning](https://arxiv.org/abs/2004.11362)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/94)
 
 <a id="markdown-conv-arch" name="conv-arch"></a>
 ### Convolution Architecture
