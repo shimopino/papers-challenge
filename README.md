@@ -176,6 +176,8 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/56)
 - [[arXiv:2004.02984] MobileBERT: a Compact Task-Agnostic BERT for Resource-Limited Devices](https://arxiv.org/abs/2004.02984)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/80)
+- [[arXiv:2004.11886] Lite Transformer with Long-Short Range Attention](https://arxiv.org/abs/2004.11886)
+  - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/96)
     
 <a id="markdown-nlp-survey" name="nlp-survey"></a>
 ### Survey
