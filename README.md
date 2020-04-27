@@ -75,6 +75,8 @@
 - [[arXiv:1904.01480] Semantics Disentangling for Text-to-Image Generation](https://arxiv.org/abs/1904.01480)
 - [[arXiv:2003.12137] Cycle Text-To-Image GAN with BERT](https://arxiv.org/abs/2003.12137)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/58)
+- [[arXiv:2004.11437] Efficient Neural Architecture for Text-to-Image Synthesis](https://arxiv.org/abs/2004.11437)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/97)
 
 <a id="markdown-super-resolution" name="super-resolution"></a>
 ### Super-Resolution
