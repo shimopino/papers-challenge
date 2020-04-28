@@ -22,6 +22,8 @@
   - [Natural Language Processing](#nlp)
     - [Transformers](#transformers)
     - [Survey](#nlp-survey)
+  - [Tabular](#table)
+    - [Concept Shift](#con-shift)
 <!-- /TOC -->
 
 ---
@@ -183,3 +185,13 @@
 ### Survey
 - [[arXiv:2004.08900] The Cost of Training NLP Models: A Concise Overview](https://arxiv.org/abs/2004.08900)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/89)
+
+
+<a id="markdown-table" name="table"></a>
+## Tabular
+
+<a id="markdown-con-shift" name="con-shift"></a>
+### Concept Shift
+
+- [[arXiv:2004.03045] Adversarial Validation Approach to Concept Drift Problem in Automated Machine Learning Systems](https://arxiv.org/abs/2004.03045)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/68)
