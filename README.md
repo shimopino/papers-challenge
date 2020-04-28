@@ -55,13 +55,16 @@
 ### Image-to-Image Translation
 
 - [[arXiv:1611.07004] Image-to-Image Translation with Conditional Adversarial Networks](https://arxiv.org/abs/1611.07004)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/29)
 - [[arXiv:1711.11585] High-Resolution Image Synthesis and Semantic Manipulation with Conditional GANs](https://arxiv.org/abs/1711.11585)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/30)
 - [[arXiv:2002.05638] GANILLA: Generative Adversarial Networks for Image to Illustration Translation](https://arxiv.org/abs/2002.05638)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/9)
 - [[arXiv:2003.00187] Augmented Cyclic Consistency Regularization for Unpaired Image-to-Image Translation](https://arxiv.org/abs/2003.00187)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/19)
 - [[arXiv:2003.02683] Image Generation from Freehand Scene Sketches](https://arxiv.org/abs/2003.02683)
 - [[arXiv:2003.00273] Reusing Discriminators for Encoding Towards Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2003.00273)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/26)
 - [[arXiv:2003.04858] Unpaired Image-to-Image Translation using Adversarial Consistency Loss](https://arxiv.org/abs/2003.04858)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/45)
 - [[arXiv:2003.07101] Synthesizing human-like sketches from natural images using a conditional convolutional decoder](https://arxiv.org/abs/2003.07101)
