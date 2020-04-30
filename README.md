@@ -18,6 +18,7 @@
     - [Convolution Architecture](#conv-arch)
     - [Architecure Search](#arch-search)
     - [Data Augmentation](#data-augmentation)
+    - [Object Detection](#object-detection)
     - [Anomaly Detection](#anomaly-detection)
   - [Natural Language Processing](#nlp)
     - [Transformers](#transformers)
@@ -164,6 +165,11 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/4)
 - [[arXiv:2002.11102] On Feature Normalization and Data Augmentation](https://arxiv.org/abs/2002.11102)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/51)
+
+<a id="markdown-object-detection" name="object-detection"></a>
+### Object Detection
+- [[arXiv:2003.05176] Equalization Loss for Long-Tailed Object Recognition](https://arxiv.org/abs/2003.05176)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/41)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
