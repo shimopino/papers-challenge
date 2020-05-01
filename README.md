@@ -176,6 +176,8 @@
 ### Self-Supervised Learning
 - [[arXiv:2002.05709] A Simple Framework for Contrastive Learning of Visual Representations](https://arxiv.org/abs/2002.05709)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/38)
+- [[arXiv:2003.04297] Improved Baselines with Momentum Contrastive Learning](https://arxiv.org/abs/2003.04297)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/46)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
