@@ -19,6 +19,7 @@
     - [Architecure Search](#arch-search)
     - [Data Augmentation](#data-augmentation)
     - [Object Detection](#object-detection)
+    - [Self-Supervised Learning](#cv-self-sup)
     - [Anomaly Detection](#anomaly-detection)
   - [Natural Language Processing](#nlp)
     - [Transformers](#transformers)
@@ -170,6 +171,11 @@
 ### Object Detection
 - [[arXiv:2003.05176] Equalization Loss for Long-Tailed Object Recognition](https://arxiv.org/abs/2003.05176)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/41)
+
+<a id="markdown-cv-self-sup" name="cv-self-sup"></a>
+### Self-Supervised Learning
+- [[arXiv:2002.05709] A Simple Framework for Contrastive Learning of Visual Representations](https://arxiv.org/abs/2002.05709)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/38)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
