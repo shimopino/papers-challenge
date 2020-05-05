@@ -36,6 +36,8 @@
 <a id="markdown-image-generation" name="image-generation"></a>
 ### Image Generation
 
+- [[arXiv:1809.11096] Large Scale GAN Training for High Fidelity Natural Image Synthesis](https://arxiv.org/abs/1809.11096)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/106)
 - [[arXiv:1905.01164] SinGAN: Learning a Generative Model from a Single Natural Image](https://arxiv.org/abs/1905.01164)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/1)
 - [[arXiv:1912.11035] CNN-generated images are surprisingly easy to spot... for now](https://arxiv.org/abs/1912.11035)
