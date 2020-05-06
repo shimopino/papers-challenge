@@ -156,6 +156,8 @@
 - [[arXiv:1911.08432] Defective Convolutional Layers Learn Robust CNNs](https://arxiv.org/abs/1911.08432)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/2)
 - [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
+- [[arXiv:2004.13587] Do We Need Fully Connected Output Layers in Convolutional Networks?](https://arxiv.org/abs/2004.13587)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/107)
 
 <a id="markdown-arch-search" name="arch-search"></a>
 ### Architecture Search
