@@ -146,6 +146,8 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/3)
 - [[arXiv:2004.11362] Supervised Contrastive Learning](https://arxiv.org/abs/2004.11362)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/94)
+- [[arXiv:2003.00152] Training BatchNorm and Only BatchNorm: On the Expressive Power of Random Features in CNNs](https://arxiv.org/abs/2003.00152)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/102)
 
 <a id="markdown-conv-arch" name="conv-arch"></a>
 ### Convolution Architecture
