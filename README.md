@@ -179,6 +179,8 @@
 ### Object Detection
 - [[arXiv:2003.05176] Equalization Loss for Long-Tailed Object Recognition](https://arxiv.org/abs/2003.05176)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/41)
+- [[arXiv:2004.08955] ResNeSt: Split-Attention Networks](https://arxiv.org/abs/2004.08955)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/92)
 
 <a id="markdown-cv-self-sup" name="cv-self-sup"></a>
 ### Self-Supervised Learning
