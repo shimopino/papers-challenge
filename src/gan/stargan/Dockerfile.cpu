@@ -33,7 +33,11 @@ RUN conda install -y python=$PYTHON_VERSION pyyaml
 #    && jupyter labextension install @jupyterlab/toc -y --clean
 
 RUN conda install pytorch torchvision cpuonly -c pytorch \
-    && conda install -y -c conda-forge tensorflow \
     && conda clean -ya
+
+RUN pip install --no-cache-dir tensorboard
+
+#RUN conda install -y -c conda-forge tensorflow \
+#    && conda clean -ya
 
 WORKDIR /src
