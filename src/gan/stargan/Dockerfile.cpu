@@ -27,8 +27,13 @@ ENV PATH /opt/conda/bin:$PATH
 
 RUN conda install -y python=$PYTHON_VERSION pyyaml
 
+# RUN conda install -y python=$PYTHON_VERSION pyyaml \
+#    && conda install -c conda-forge jupyterlab \
+#    && jupyter labextension install @lckr/jupyterlab_variableinspector -y --clean \
+#    && jupyter labextension install @jupyterlab/toc -y --clean
+
 RUN conda install pytorch torchvision cpuonly -c pytorch \
-    && conda install -y conda-forge tensorflow \
+    && conda install -y -c conda-forge tensorflow \
     && conda clean -ya
-    
+
 WORKDIR /src
