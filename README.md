@@ -62,6 +62,8 @@
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/29)
 - [[arXiv:1711.11585] High-Resolution Image Synthesis and Semantic Manipulation with Conditional GANs](https://arxiv.org/abs/1711.11585)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/30)
+- [[arXiv:1812.10889] InstaGAN: Instance-aware Image-to-Image Translation](https://arxiv.org/abs/1812.10889)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/100)
 - [[arXiv:1907.04312] Positional Normalization](https://arxiv.org/abs/1907.04312)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/52)
 - [[arXiv:2002.05638] GANILLA: Generative Adversarial Networks for Image to Illustration Translation](https://arxiv.org/abs/2002.05638)
