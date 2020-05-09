@@ -60,6 +60,8 @@
 
 - [[arXiv:1611.07004] Image-to-Image Translation with Conditional Adversarial Networks](https://arxiv.org/abs/1611.07004)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/29)
+- [[arXiv:1711.09020] StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation](https://arxiv.org/abs/1711.09020)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/101)
 - [[arXiv:1711.11585] High-Resolution Image Synthesis and Semantic Manipulation with Conditional GANs](https://arxiv.org/abs/1711.11585)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/30)
 - [[arXiv:1812.10889] InstaGAN: Instance-aware Image-to-Image Translation](https://arxiv.org/abs/1812.10889)
