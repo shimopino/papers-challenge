@@ -1,0 +1,35 @@
+FROM ubuntu:18.04
+
+ARG PYTHON_VERSION=3.8
+ARG WITH_TORCHVISION=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    wget \
+    vim \
+    zip \
+    unzip \
+    ca-certificates \
+    libjpeg-dev \
+    libpng-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python Anaconda default.
+RUN wget -q https://repo.anaconda.com/archive/Anaconda3-5.3.1-Linux-x86_64.sh -O ~/anaconda.sh \
+    && /bin/bash ~/anaconda.sh -b -p /opt/conda \
+    && rm ~/anaconda.sh
+
+# Install PyTorch V1.
+ENV PATH /opt/conda/bin:$PATH
+
+RUN conda install -y python=$PYTHON_VERSION \
+    && conda install -y -c conda-forge feather-format \
+    && conda install -y -c conda-forge jupyterlab \
+    && conda install -y -c conda-forge jupyter_contrib_nbextensions \
+    && jupyter contrib nbextension install --system
+
+RUN conda install pytorch torchvision cpuonly -c pytorch
+WORKDIR /src
