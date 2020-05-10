@@ -26,7 +26,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 RUN conda install -y python=$PYTHON_VERSION pyyaml
 
-RUN conda install pytorch torchvision cpuonly -c pytorch \
+RUN conda install pytorch torchvision cudatoolkit=10.1 -c pytorch \
     && conda clean -ya
 
 RUN pip install --no-cache-dir tensorboard
