@@ -70,6 +70,10 @@ services:
       command: tensorboard --logdir=/logs --bind-all
 ```
 
+### makefile
+
+- [docker-compose-makefile](https://github.com/krom/docker-compose-makefile)
+
 ## Tensorboard
 
 ### コンテナ上のTensorboardに外部アクセス
@@ -96,5 +100,6 @@ Dockerコンテナ内で以下のようにTensorboardを起動すると外部か
 ## JupyterLab
 
 - [JupyterLabのおすすめ拡張機能8選](https://qiita.com/canonrock16/items/d166c93087a4aafd2db4)
+- [Docker で JupyterLab を起動し、token 入力なしでアクセスする](https://qiita.com/ao_log/items/5438f2aaf5c2b46d2ccb)
 
  
