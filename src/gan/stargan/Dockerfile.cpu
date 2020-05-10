@@ -36,4 +36,4 @@ RUN conda install pytorch torchvision cpuonly -c pytorch \
 
 RUN pip install --no-cache-dir tensorboard
 
-WORKDIR /src
+WORKDIR /home/src

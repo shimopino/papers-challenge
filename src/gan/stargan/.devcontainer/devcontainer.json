@@ -1,0 +1,27 @@
+{
+	"name": "Existing Docker Compose (Extend)",
+
+	"dockerComposeFile": [
+		// "../docker-compose.yml"	// Ubuntu Settings
+		"..\\docker-compose.yml",	// Windows Settings
+		"docker-compose.yml"
+	],
+
+	"service": "stargan",
+
+	"workspaceFolder": "/home/src",
+
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"python.pythonPath": "/opt/conda/bin/python",	// Anaconda
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+	},
+
+	"extensions": [
+		"ms-python.python",
+        "christian-kohler.path-intellisense",
+        "coenraads.bracket-pair-colorizer-2",
+        "tabnine.tabnine-vscode"
+	]
+}

@@ -1,0 +1,9 @@
+version: '3'
+services:
+  stargan:    
+    environment:
+      - HOME=/home
+    volumns:
+      - ~/.gitconfig:/home/.gitconfig
+      - ~/.ssh:/home/.ssh
+ 
