@@ -7,11 +7,11 @@ services:
       dockerfile: Dockerfile.cpu
       args:
         - PYTHON_VERSION=3.8
-      volumes:
-        - ./:/src
-      ports:
-        - 8888:8888
-      tty: true
+    volumes:
+      - ./:/src
+    ports:
+      - 8888:8888
+    tty: true
   tensorboard:
     image: stargan.tensorboard
     build:
