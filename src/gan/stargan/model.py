@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class ResidualBlock(nn.Module):
@@ -40,7 +39,7 @@ class Generator(nn.Module):
 
         # Bottleneck layers.
         for i in range(repeat_num):
-            layers.append(ResidualBlock(dim_in=curr_dim, dim_out=curr_dim))
+            layers.append(ResidualBlock(in_feat=curr_dim, out_feat=curr_dim))
 
         # Up-sampling layers.
         for i in range(2):

@@ -1,6 +1,7 @@
 import os
 import random
 from PIL import Image
+import torch
 from torch.utils import data
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
@@ -8,7 +9,7 @@ from torchvision.datasets import ImageFolder
 
 class CelebA(data.Dataset):
 
-    def __init__(self, image_dir, attr_path, selected_attr, transform, mode):
+    def __init__(self, image_dir, attr_path, selected_attrs, transform, mode):
         self.image_dir = image_dir
         self.attr_path = attr_path
         self.selected_attrs = selected_attrs
@@ -21,6 +22,11 @@ class CelebA(data.Dataset):
         self.attr2idx = {}
         self.idx2attr = {}
         self.preprocess()
+
+        if mode == 'train':
+            self.num_images = len(self.train_dataset)
+        else:
+            self.num_images = len(self.test_dataset)
 
     def preprocess(self):
         """Preprocess the CelebA attribute file."""
@@ -67,12 +73,12 @@ def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=1
     """Build and return a data loader."""
     transform = []
     if mode == 'train':
-        transform.append(T.RandomHorizontalFlip())
-    transform.append(T.CenterCrop(crop_size))
-    transform.append(T.Resize(image_size))
-    transform.append(T.ToTensor())
-    transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
-    transform = T.Compose(transform)
+        transform.append(transforms.RandomHorizontalFlip())
+    transform.append(transforms.CenterCrop(crop_size))
+    transform.append(transforms.Resize(image_size))
+    transform.append(transforms.ToTensor())
+    transform.append(transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
+    transform = transforms.Compose(transform)
 
     if dataset == 'CelebA':
         dataset = CelebA(image_dir, attr_path, selected_attrs, transform, mode)
