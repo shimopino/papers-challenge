@@ -1,7 +1,6 @@
 FROM ubuntu:18.04
 
-ARG PYTHON_VERSION=3.8
-ARG WITH_TORCHVISION=1
+ARG PYTHON_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -36,8 +35,5 @@ RUN conda install pytorch torchvision cpuonly -c pytorch \
     && conda clean -ya
 
 RUN pip install --no-cache-dir tensorboard
-
-#RUN conda install -y -c conda-forge tensorflow \
-#    && conda clean -ya
 
 WORKDIR /src

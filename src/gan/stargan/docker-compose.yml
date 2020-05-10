@@ -1,0 +1,14 @@
+version: "3"
+services:
+    stargan:
+        image: stargan.dev
+        build:
+            context: .
+            dockerfile: Dockerfile.cpu
+            args:
+                - PYTHON_VERSION=3.8
+        volumes:
+            - ./:/src
+        ports:
+            - 8888:8888
+        tty: true

@@ -3,5 +3,6 @@
 This repository aims to reproduce the experimental results of the StarGAN paper.
 
 - [paper](https://arxiv.org/abs/1711.09020)
+- [Official PyTorch Implementation](https://github.com/yunjey/stargan)
 - [issue link](https://github.com/KeisukeShimokawa/papers-challenge/issues/101)
 
