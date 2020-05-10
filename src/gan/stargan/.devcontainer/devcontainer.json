@@ -4,7 +4,7 @@
 	"dockerComposeFile": [
 		// "../docker-compose.yml"	// Ubuntu Settings
 		"..\\docker-compose.yml",	// Windows Settings
-		"docker-compose.yml"
+		// "docker-compose.extend.yml"
 	],
 
 	"service": "stargan",
