@@ -1,0 +1,9 @@
+FROM python:3.8
+
+RUN pip install --no-cache-dir tensorboard
+
+WORKDIR /logs
+
+ENTRYPOINT ["tensorboard", "--logdir", "/logs", "--port", "6006"]
+
+CMD []
