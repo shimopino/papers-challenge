@@ -41,6 +41,7 @@
 - [[arXiv:1905.01164] SinGAN: Learning a Generative Model from a Single Natural Image](https://arxiv.org/abs/1905.01164)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/1)
 - [[arXiv:1912.11035] CNN-generated images are surprisingly easy to spot... for now](https://arxiv.org/abs/1912.11035)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/21)
 - [[arXiv:2002.10964] Freeze the Discriminator: a Simple Baseline for Fine-Tuning GANs](https://arxiv.org/abs/2002.10964)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/16)
 - [[arXiv:2002.12655] A U-Net Based Discriminator for Generative Adversarial Networks](https://arxiv.org/abs/2002.12655)
@@ -162,6 +163,7 @@
 - [[arXiv:1911.08432] Defective Convolutional Layers Learn Robust CNNs](https://arxiv.org/abs/1911.08432)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/2)
 - [[arXiv:2003.01367] Curriculum By Texture](https://arxiv.org/abs/2003.01367)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/36)
 - [[arXiv:2004.13587] Do We Need Fully Connected Output Layers in Convolutional Networks?](https://arxiv.org/abs/2004.13587)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/107)
 
