@@ -8,7 +8,7 @@ services:
       args:
         - PYTHON_VERSION=3.8
     volumes:
-      - ./:/home/src
+      - ../:/home/src
     ports:
       - "8888:8888"
     tty: true
@@ -18,11 +18,11 @@ services:
       context: .
       dockerfile: Dockerfile.tensorboard
     volumes:
-      - ./stargan/logs:/logs
+      - ../stargan/logs:/logs
     working_dir: /logs
     ports:
       - "6006:6006"
-    environment: 
+    environment:
       reload_interval: 2
       log_dir: /logs
     command: tensorboard --logdir=/logs --host=0.0.0.0
