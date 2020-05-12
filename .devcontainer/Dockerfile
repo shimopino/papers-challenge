@@ -1,32 +1,39 @@
-# https://github.com/NVIDIA/apex
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
+FROM ubuntu:18.04
 
-ARG BASE_IMAGE
-RUN echo "Installing Apex on top of ${BASE_IMAGE}"
+ARG PYTHON_VERSION
 
-# install git
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  git \
-  curl \
-  wget \
-  zip \
-  unzip \
-  && apt-get autoremove -y \
-  && apt-get clean -y \
-  && rm -rf /var/lib/apt/lists/*
+    build-essential \
+    cmake \
+    git \
+    curl \
+    wget \
+    vim \
+    zip \
+    unzip \
+    ca-certificates \
+    libjpeg-dev \
+    libpng-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# make sure we don't overwrite some existing directory called "apex"
-WORKDIR /tmp/unique_for_apex
+RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && chmod +x ~/miniconda.sh \
+    && ~/miniconda.sh -b -p /opt/conda \
+    && rm ~/miniconda.sh
 
-# uninstall Apex if present, twice to make absolutely sure :)
-RUN pip uninstall -y apex || :
-RUN pip uninstall -y apex || :
+# Install PyTorch V1.
+ENV PATH /opt/conda/bin:$PATH
 
-# SHA is something the user can touch to force recreation of this Docker layer,
-# and therefore force cloning of the latest version of Apex
-RUN SHA=ToUcHMe git clone https://github.com/NVIDIA/apex.git
-WORKDIR /tmp/unique_for_apex/apex
-RUN pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
+RUN conda install -y python=$PYTHON_VERSION pyyaml
+
+# RUN conda install -y python=$PYTHON_VERSION pyyaml \
+#    && conda install -c conda-forge jupyterlab \
+#    && jupyter labextension install @lckr/jupyterlab_variableinspector -y --clean \
+#    && jupyter labextension install @jupyterlab/toc -y --clean
+
+RUN conda install pytorch torchvision cpuonly -c pytorch \
+    && conda clean -ya
+
+RUN pip install --no-cache-dir tensorboard flake8 black
 
 WORKDIR /home/src
