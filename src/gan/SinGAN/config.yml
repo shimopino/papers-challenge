@@ -1,0 +1,31 @@
+# workspace
+is_cuda: 0
+# load, input, save configurations
+netG: ""
+netD: ""
+manual_seed: 42
+nc_z: 3
+nc_im: 3
+out: "result"
+# networks hyperparameters
+nfc: 32
+min_nfc: 32
+ker_size: 3
+num_layer: 5
+stride: 1
+padd_size: 0
+# pyramid parameters
+scale_factor: 0.75
+noise_amp: 0.1
+min_size: 25
+max_sie: 250
+# optimization hyper parameters
+niter: 2000
+gamma: 0.1
+lr_g: 0.0005
+lr_d: 0.0005
+beta1: 0.5
+Gsteps: 3
+Dsteps: 3
+lambda_grad: 0.1
+alpha: 10
