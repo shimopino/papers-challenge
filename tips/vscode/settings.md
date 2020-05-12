@@ -47,7 +47,18 @@ RUN pip install --no-cache-dir torch==1.5.0+cpu torchvision==0.6.0+cpu -f https:
 		"python.linting.enabled": true,
 		"python.linting.pylintEnabled": false,
 		"python.linting.flake8Enabled": true,
+		"python.linting.flake8Args": [
+			// E501: line too longを無視
+			// W503: 演算子の後で改行を行う
+			"--ignore=E501,W503"
+		],
 		"python.linting.lintOnSave": true,
+		"python.sortImports.args": [
+			// 同一ライブラリからのインポートは3つ区切りで改行
+        		"-m 3"
+    		],
+		// Microsoft製のコードを補間を有効にする
+		"python.jediEnabled": false
     		// Formatterには"black"を指定しておき、保存時に自動的に適用する
 		"python.formatting.provider": "black",
 		"editor.formatOnSave": true
@@ -77,9 +88,46 @@ VSCodeを開いているフォルダ上に`main.py`が存在しているとき�
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
       "console": "integratedTerminal"
+    },
+    // 以下にhttps://74th.github.io/vscode-debug-specs/python/のサンプルを記載
+    {
+      "name": "Python Module",
+      "type": "python",
+      "request": "launch",
+      // デバッグを開始したファイルの先頭からブレークポイントをスタートさせる
+      "stopOnEntry": true,
+      "pythonPath": "${config:python.pythonPath}",
+      "module": "unittest",
+      "args": [
+        // test package
+        // <test_file>
+        // <test_file>.<test_class>
+        // <test_file>.<test_class>.<test_method>
+        "test_bubble_sort.TestBubbleSort.test_bubble_sort"
+      ],
+      "cwd": "${workspaceRoot}",
+      "env": {},
+      // 環境変数は別のファイルにも定義可能
+      "envFile": "${workspaceRoot}/.env",
+      "debugOptions": [
+        "WaitOnAbnormalExit",
+        "WaitOnNormalExit",
+        "RedirectOutput"
+      ]
     }
   ]
 }
 ```
 
 これでPyTorchなどでデバッグが可能となる。
+
+`devcontainer.json`で実行する設定以外にも`.vscode`以下の`settings.json`やあるいはユーザー設定に直接リモートサーバにインストールしておきたい拡張機能は以下のように指定する。
+
+```json
+{
+   "remote.containers.defaultExtensions": [
+        "ms-python.python",
+    ]
+}
+```
+
