@@ -18,6 +18,8 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 
+from apex import amp
+
 model_names = sorted(
     name
     for name in models.__dict__
@@ -136,6 +138,8 @@ parser.add_argument(
     "fastest way to use PyTorch for either single node or "
     "multi node data parallel training",
 )
+parser.add_argument("--is_apex", default=1, type=int, help="use mixed precision")
+parser.add_argument("--opt_level", default="O1", type=str, help="optimization level")
 
 best_acc1 = 0
 
@@ -330,6 +334,9 @@ def main_worker(gpu, ngpus_per_node, args):
         validate(val_loader, model, criterion, args)
         return
 
+    if args.is_apex:
+        model, optimizer = amp.initialize(model, optimizer, opt_level=args.opt_level)
+
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
@@ -396,7 +403,11 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
-        loss.backward()
+        if args.is_apex:
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
         optimizer.step()
 
         # measure elapsed time
