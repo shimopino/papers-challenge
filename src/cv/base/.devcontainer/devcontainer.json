@@ -11,7 +11,7 @@
     // nvidia dockerを起動できるようにする
     "--gpus=all",
     // DataLoaderで使用できるworkersを増やすために使用
-    "-shm-size=4gb"
+    "--shm-size=4gb"
   ],
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",

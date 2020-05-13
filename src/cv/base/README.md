@@ -9,7 +9,7 @@ $ bash download.sh tiny-imagenet-200
 ## train
 
 ```sh
-$ python main.py --data data/tiny-imagenet-200 --workers 4 --gpu 0
+$ python main.py --data data/tiny-imagenet-200 --workers 8 --gpu 0
 ```
 
 > When training a model in a GPU environment, an error will occur if the number of workers of DataLoader is set to 0.
