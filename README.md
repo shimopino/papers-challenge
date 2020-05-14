@@ -6,9 +6,13 @@ Reproduction experiments for each paper were conducted on VSCode and Colab. In t
 
 To run the experiment, please call the "Open Repository in Container" and run the file in a separate Git environment.
 
+To take full advantage of VSCode's features, choose HTTPS when you clone this repository.
+
 ## TOC
 
 - [Paper Reading List](#paper-reading-list)
+  - [experiments](#experiments)
+  - [TOC](#toc)
   - [Generative Adversarial Networks](#generative-adversarial-networks)
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
@@ -18,21 +22,21 @@ To run the experiment, please call the "Open Repository in Container" and run th
     - [Denoising](#denoising)
     - [Disentanglement](#disentanglement)
     - [Consistency Regularization](#consistency-regularization)
-    - [GAN Architecute Search](#gan-arch-search)
-    - [Survey](#gan-survey)
+    - [GAN Architecture Search](#gan-architecture-search)
+    - [Survey](#survey)
   - [Computer Vision](#computer-vision)
-    - [Learning Strategy](#learn-strg)
-    - [Convolution Architecture](#conv-arch)
-    - [Architecure Search](#arch-search)
+    - [Learning Strategy](#learning-strategy)
+    - [Convolution Architecture](#convolution-architecture)
+    - [Architecture Search](#architecture-search)
     - [Data Augmentation](#data-augmentation)
     - [Object Detection](#object-detection)
-    - [Self-Supervised Learning](#cv-self-sup)
+    - [Self-Supervised Learning](#self-supervised-learning)
     - [Anomaly Detection](#anomaly-detection)
-  - [Natural Language Processing](#nlp)
+  - [Natural Language Processing](#natural-language-processing)
     - [Transformers](#transformers)
-    - [Survey](#nlp-survey)
-  - [Tabular](#table)
-    - [Concept Shift](#con-shift)
+    - [Survey](#survey-1)
+  - [Tabular](#tabular)
+    - [Concept Shift](#concept-shift)
 <!-- /TOC -->
 
 ---
