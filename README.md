@@ -17,6 +17,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
+    - [Speech-To-Image](#speech2image)
     - [Super-Resolution](#super-resolution)
     - [Image Editting](#image-editting)
     - [Denoising](#denoising)
@@ -106,6 +107,12 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/58)
 - [[arXiv:2004.11437] Efficient Neural Architecture for Text-to-Image Synthesis](https://arxiv.org/abs/2004.11437)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/97)
+
+<a id="markdown-speech2image" name="speech2image"></a>
+### Speech-to-Image Translation
+
+- [[arXiv:2005.06968] S2IGAN: Speech-to-Image Generation via Adversarial Learning](https://arxiv.org/abs/2005.06968)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/116)
 
 <a id="markdown-super-resolution" name="super-resolution"></a>
 ### Super-Resolution
