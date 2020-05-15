@@ -29,6 +29,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Learning Strategy](#learning-strategy)
     - [Convolution Architecture](#convolution-architecture)
     - [Architecture Search](#architecture-search)
+    - [Normalization](#cv-norm)
     - [Data Augmentation](#data-augmentation)
     - [Object Detection](#object-detection)
     - [Self-Supervised Learning](#self-supervised-learning)
@@ -189,6 +190,11 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 ### Architecture Search
 - [[arXiv:1908.09791] Once-for-All: Train One Network and Specialize it for Efficient Deployment on Diverse Hardware Platforms](https://arxiv.org/abs/1908.09791)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/49)
+    
+<a id="markdown-cv-norm" name="cv-norm"></a>
+### Normalization
+- [[arXiv:1903.10520] Weight Standardization](https://arxiv.org/abs/1903.10520)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/117)
 
 <a id="markdown-data-augmentation" name="data-augmentation"></a>
 ### Data Augmentation
