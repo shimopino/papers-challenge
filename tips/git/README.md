@@ -6,7 +6,7 @@
 $ git mv <previous name> <new name>
 ```
 
-- [in-a-git-repository-how-to-properly-rename-a-directory](https://stackoverflow.com/questions/11183788/in-a-git-repository-how-to-properly-rename-a-directory)
+- [In a Git repository, how to properly rename a directory?](https://stackoverflow.com/questions/11183788/in-a-git-repository-how-to-properly-rename-a-directory)
 
 ### remove directory from git repo
 
@@ -22,8 +22,8 @@ $ git push origin <your branch>
 ```
 
 ```sh
-# remove directory only from git repo
+# remove directory only from git repo (save same directory on local)
 $ git rm -r --cached <directory in git repo>
 ```
 
-- [How to remove a directory from git repository?]()https://stackoverflow.com/questions/6313126/how-to-remove-a-directory-from-git-repository
+- [How to remove a directory from git repository?](https://stackoverflow.com/questions/6313126/how-to-remove-a-directory-from-git-repository)
