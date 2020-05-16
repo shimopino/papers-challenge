@@ -1,65 +1,99 @@
+# https://github.com/kwotsin/mimicry/blob/master/torch_mimicry/modules/losses.py
 import torch
+import torch.nn.functional as F
 
 
-class GANLoss:
-    def __init__(self, dis):
-        self.dis = dis
+def minmax_loss_dis(
+    output_fake, output_real, fake_label_value=0.0, real_label_value=1.0, **kwargs
+):
 
-    def dis_loss(self, real_samples, fake_samples, height, alpha):
-        raise NotImplementedError("dis loss method has not been implemented")
+    fake_labels = torch.full(
+        (output_fake.shape[0], 1), fake_label_value, device=output_fake.device
+    )
+    real_labels = torch.full(
+        (output_real.shape[0], 1), real_label_value, device=output_real.device
+    )
 
-    def gen_loss(self, real_samples, fake_samples, height, alpha):
-        raise NotImplementedError("gen_loss method has not been implemented")
+    errD_fake = F.binary_cross_entropy_with_logits(output_fake, fake_labels, **kwargs)
+    errD_real = F.binary_cross_entropy_with_logits(output_real, real_labels, **kwargs)
 
-
-class ConditionalGANLoss:
-    def __init__(self, dis):
-        self.dis = dis
-
-    def dis_loss(self, real_samples, fake_samples, labels, height, alpha):
-        raise NotImplementedError("dis loss method has not been implemented")
-
-    def gen_loss(self, real_samples, fake_samples, labels, height, alpha):
-        raise NotImplementedError("gen_loss method has not been implemented")
+    loss = errD_fake + errD_real
+    return loss
 
 
-class StandardGAN(GANLoss):
-    def __init__(self, dis):
-        from torch.nn import BCEWithLogitsLoss
+def minmax_loss_gen(output_fake, real_label_value=1.0, **kwargs):
 
-        super().__init__(dis)
+    real_labels = torch.full(
+        (output_fake.shape[0], 1), real_label_value, device=output_fake.device
+    )
 
-        # define the criterion and activation used for object
-        self.criterion = BCEWithLogitsLoss()
+    loss = F.binary_cross_entropy_with_logits(output_fake, real_labels, **kwargs)
+    return loss
 
-    def dis_loss(self, real_samps, fake_samps, height, alpha):
-        # small assertion:
-        assert (
-            real_samps.device == fake_samps.device
-        ), "Real and Fake samples are not on the same device"
 
-        # device for computations:
-        device = fake_samps.device
+def wasserstein_loss_dis(output_fake, output_real):
 
-        # predictions for real images and fake images separately :
-        r_preds = self.dis(real_samps, height, alpha)
-        f_preds = self.dis(fake_samps, height, alpha)
+    loss = -1.0 * output_real.mean() + output_fake.mean()
+    return loss
 
-        # calculate the real loss:
-        real_loss = self.criterion(
-            torch.squeeze(r_preds), torch.ones(real_samps.shape[0]).to(device)
-        )
 
-        # calculate the fake loss:
-        fake_loss = self.criterion(
-            torch.squeeze(f_preds), torch.zeros(fake_samps.shape[0]).to(device)
-        )
+def wasserstein_loss_gen(output_fake):
 
-        # return final losses
-        return (real_loss + fake_loss) / 2
+    loss = -output_fake.mean()
+    return loss
 
-    def gen_loss(self, _, fake_samps, height, alpha):
-        preds, _, _ = self.dis(fake_samps, height, alpha)
-        return self.criterion(
-            torch.squeeze(preds), torch.ones(fake_samps.shape[0]).to(fake_samps.device)
-        )
+
+def hinge_loss_dis(output_fake, output_real):
+
+    loss = F.relu(1.0 - output_real).mean() + F.relu(1.0 + output_fake).mean()
+    return loss
+
+
+def hinge_loss_gen(output_fake):
+
+    loss = -output_fake.mean()
+    return loss
+
+
+if __name__ == "__main__":
+    from logging import DEBUG
+    from logging import getLogger, StreamHandler, Formatter
+
+    # logger
+    logger = getLogger(__name__)
+    logger.setLevel(DEBUG)
+    # stream_handler
+    fmt_str = "%(asctime)s : %(levelname)s : %(message)s"
+    format = Formatter(fmt_str, "%Y-%m-%d %H:%M:%S")
+    stream_handler = StreamHandler()
+    stream_handler.setFormatter(format)
+    stream_handler.setLevel(DEBUG)
+    # set handler
+    logger.addHandler(stream_handler)
+
+    # sample discriminator output probability
+    output_fake = torch.ones(4, 1)
+    output_real = torch.ones(4, 1)
+    logger.debug(f"output fake with ones: {output_fake.size()}")
+    logger.debug(f"output real with ones: {output_real.size()}")
+
+    # minmax
+    logger.debug("--------------------------------")
+    loss_gen = minmax_loss_gen(output_fake)
+    loss_dis = minmax_loss_dis(output_fake, output_real)
+    logger.debug(f"generator loss    : {loss_gen.item()}")
+    logger.debug(f"discriminator loss: {loss_dis.item()}")
+
+    # wasserstein
+    logger.debug("--------------------------------")
+    loss_gen = wasserstein_loss_gen(output_fake)
+    loss_dis = wasserstein_loss_dis(output_fake, output_real)
+    logger.debug(f"generator loss    : {loss_gen.item()}")
+    logger.debug(f"discriminator loss: {loss_dis.item()}")
+
+    # hinge
+    logger.debug("--------------------------------")
+    loss_gen = hinge_loss_gen(output_fake)
+    loss_dis = hinge_loss_dis(output_fake, output_real)
+    logger.debug(f"generator loss    : {loss_gen.item()}")
+    logger.debug(f"discriminator loss: {loss_dis.item()}")
