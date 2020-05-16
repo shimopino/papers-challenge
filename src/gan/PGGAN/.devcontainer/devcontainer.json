@@ -9,7 +9,9 @@
   },
   "runArgs": [
     // nvidia dockerを起動できるようにする
-    "--gpus=all"
+    "--gpus=all",
+    // 共有メモリ数を増加しておく
+    "--shm-size=2gb"
   ],
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
