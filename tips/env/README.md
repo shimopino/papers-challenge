@@ -91,7 +91,7 @@ Dockerコンテナ内で以下のようにTensorboardを起動すると外部か
 
 ```sh
 # "--bind-all"フラグをつける
-(container) $ tensorboard --logdir=/path/to/logs --bind-allN
+(container) $ tensorboard --logdir=/path/to/logs --bind-all
 
 # "--host=0.0.0.0"を指定する
 (container) $ tensorboard --logdir=/path/to/logs --host=0.0.0.0
