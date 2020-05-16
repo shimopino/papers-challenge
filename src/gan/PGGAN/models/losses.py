@@ -63,7 +63,7 @@ if __name__ == "__main__":
     logger = getLogger(__name__)
     logger.setLevel(DEBUG)
     # stream_handler
-    fmt_str = "%(asctime)s : %(levelname)s : %(message)s"
+    fmt_str = "[%(levelname)s] %(asctime)s >>\t%(message)s"
     format = Formatter(fmt_str, "%Y-%m-%d %H:%M:%S")
     stream_handler = StreamHandler()
     stream_handler.setFormatter(format)
