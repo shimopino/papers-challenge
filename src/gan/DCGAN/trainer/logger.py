@@ -86,5 +86,13 @@ class Logger:
 
 
 if __name__ == "__main__":
+    import torch
+
     logger = Logger("./logs")
     logger.add_scalar_log("sample", 1.0, global_step=1)
+
+    sample_img = torch.randn(10, 3, 128, 128)
+    logger.add_images("sample_img", sample_img, global_step=1)
+
+    sample_conv = torch.nn.Conv2d(32, 64, 3, 1, 1, bias=False)
+    logger.add_histogram("sample_conv", sample_conv.weight.data, global_step=1)
