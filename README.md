@@ -13,7 +13,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 - [Paper Reading List](#paper-reading-list)
   - [experiments](#experiments)
   - [TOC](#toc)
-  - [Generative Adversarial Networks](#generative-adversarial-networks)
+  - [Generative Models](#generative-models)
     - [Image Generation](#image-generation)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
@@ -25,6 +25,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Consistency Regularization](#consistency-regularization)
     - [GAN Architecture Search](#gan-architecture-search)
     - [Survey](#survey)
+    - [Variational AutoEncoder](#vae)
   - [Computer Vision](#computer-vision)
     - [Learning Strategy](#learning-strategy)
     - [Convolution Architecture](#convolution-architecture)
@@ -43,8 +44,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 
 ---
 
-<a id="markdown-generative-adversarial-networks" name="generative-adversarial-networks"></a>
-## Generative Adversarial Networks
+<a id="markdown-generative-models" name="generative-models"></a>
+## Generative Models
 
 <a id="markdown-image-generation" name="image-generation"></a>
 ### Image Generation
@@ -158,6 +159,12 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 ### Survey
 - [[arXiv:1906.01529] Generative Adversarial Networks in Computer Vision: A Survey and Taxonomy](https://arxiv.org/abs/1906.01529)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/15)
+
+
+<a id="markdown-vae" name="vae"></a>
+### Variational AutoEncoder
+- [[arXiv:1711.00937] Neural Discrete Representation Learning](https://arxiv.org/abs/1711.00937)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/105)
 
 ---
 
