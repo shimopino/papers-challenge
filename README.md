@@ -15,6 +15,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
   - [TOC](#toc)
   - [Generative Models](#generative-models)
     - [Image Generation](#image-generation)
+    - [Self-Supervised](#ss-gan)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
     - [Speech-To-Image](#speech2image)
@@ -68,7 +69,12 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/65)
 - [[arXiv:2004.05472] Autoencoding Generative Adversarial Networks](https://arxiv.org/abs/2004.05472)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/81)
-    
+
+<a id="markdown-ss-gan" name="ss-gan"></a>
+### Image Generation
+
+- [[arXiv:1811.11212] Self-Supervised GANs via Auxiliary Rotation Loss](https://arxiv.org/abs/1811.11212)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/124)
 
 <a id="markdown-image-to-image-translation" name="image-to-image-translation"></a>
 ### Image-to-Image Translation
