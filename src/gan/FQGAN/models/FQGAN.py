@@ -56,7 +56,9 @@ class ResNetGenerator(nn.Module):
 
 
 class ResNetDiscriminator(nn.Module):
-    def __init__(self, nc, ndf, use_sn=False, use_vq=True, dict_size=5):
+    def __init__(
+        self, nc, ndf, use_sn=False, use_vq=True, dict_size=5, quant_layers=None
+    ):
         super(ResNetDiscriminator, self).__init__()
         self.nc = nc
         self.ndf = ndf
@@ -78,8 +80,17 @@ class ResNetDiscriminator(nn.Module):
         self.activation = nn.ReLU(True)
 
         if self.use_vq:
-            in_feat = self.ndf >> 2
-            self.vq = VectorQuantizerEMA(in_feat, 2 ** self.dict_size)
+            assert quant_layers is not None, "should set quant_layers like ['3']"
+            assert (min(quant_layers) > 1) and (
+                max(quant_layers) < 6
+            ), "should be range [2, 5]"
+            for layer in quant_layers:
+                out_channels = getattr(self, f"block{layer}").out_channels
+                setattr(
+                    self,
+                    f"vq{layer}",
+                    VectorQuantizerEMA(out_channels, 2 ** self.dict_size),
+                )
 
         # Initialise the weights
         nn.init.xavier_uniform_(self.l6.weight.data, 1.0)
@@ -88,14 +99,23 @@ class ResNetDiscriminator(nn.Module):
 
         h = x
         h = self.block1(h)  # [B, ndf//16, 64, 64]
-        h = self.block2(h)  # [B, ndf//8,  32, 32]
-        h = self.block3(h)  # [B, ndf//4,  16, 16]
-        if self.use_vq:
-            h, loss, ppl = self.vq(h)
-        h = self.block4(h)  # [B, ndf//2,   8,  8]
-        h = self.block5(h)  # [B, ndf,      4,  4]
-        h = self.activation(h)
 
+        # h = self.block2(h)  # [B, ndf//8,  32, 32]
+        # h = self.block3(h)  # [B, ndf//4,  16, 16]
+        # if self.use_vq:
+        #     h, loss, ppl = self.vq(h)
+        # h = self.block4(h)  # [B, ndf//2,   8,  8]
+        # h = self.block5(h)  # [B, ndf,      4,  4]
+
+        quant_loss = 0
+        for layer in range(2, 6):
+            h = getattr(self, f"block{layer}")(h)
+
+            if (self.use_vq) and (layer in self.quant_layers):
+                h, loss, ppl = getattr(self, f"vq{layer}")(h)
+                quant_loss += loss
+
+        h = self.activation(h)
         # Global average pooling
         h = torch.sum(h, dim=(2, 3))  # [B, ndf]
         output = self.l6(h).squeeze()
@@ -118,3 +138,8 @@ if __name__ == "__main__":
 
     netD = ResNetDiscriminator(3, 1024, True, True, 5)
     print(netD)
+
+    sample = getattr(netD, "block2")
+    print(sample)
+    print(sample.in_channels)
+    print(sample.out_channels)
