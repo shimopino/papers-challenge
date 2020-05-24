@@ -1,7 +1,7 @@
 import math
 import torch.nn as nn
 import torch.nn.functional as F
-from modules import SNConv2d, ConditionalBatchNorm2d
+from .modules import SNConv2d, ConditionalBatchNorm2d
 
 
 class GBlock(nn.Module):
