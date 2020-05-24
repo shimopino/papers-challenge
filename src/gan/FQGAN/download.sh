@@ -1,6 +1,6 @@
 # get args
 DATASET=$1
-TARGET_DIR="../../data"
+TARGET_DIR="../data/celeba"
 IS_ADDED=false
 
 if [ $DATASET == "celeba" ]; then

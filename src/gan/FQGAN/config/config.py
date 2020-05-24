@@ -9,7 +9,7 @@ class Config:
     ngpu: int = 1
 
     # dataset
-    datapath: str = "data/"
+    datapath: str = "../data/celeba"
     num_workers: int = 2
     image_size: int = 64
 
