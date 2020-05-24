@@ -13,6 +13,9 @@
     // 共有メモリ数を増加しておく
     "--shm-size=2gb"
   ],
+  "appPort": [
+    "6006:6006"
+  ],
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
     // PythonのPathを指定
@@ -47,8 +50,7 @@
     "tabnine.tabnine-vscode",
     "coenraads.bracket-pair-colorizer-2",
     "christian-kohler.path-intellisense",
-    "njpwerner.autodocstring",
-    "almenon.arepl"
+    "njpwerner.autodocstring"
   ],
   // Container作成後はProject直下のrequirements.txtをインストールする
   "postCreateCommand": "pip install --no-cache-dir  -r requirements.txt"

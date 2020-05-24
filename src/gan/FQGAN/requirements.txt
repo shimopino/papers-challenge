@@ -1,0 +1,6 @@
+flake8
+black
+tensorboard
+torchsummary
+jupyter
+hydra-core
