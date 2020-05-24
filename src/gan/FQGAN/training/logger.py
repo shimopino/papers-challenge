@@ -5,7 +5,7 @@ from torchvision.utils import make_grid
 
 
 class Logger:
-    def __init__(self, log_dir, flush_secs):
+    def __init__(self, log_dir, flush_secs=5):
 
         self.log_dir = Path(log_dir)
         self.flush_secs = flush_secs
