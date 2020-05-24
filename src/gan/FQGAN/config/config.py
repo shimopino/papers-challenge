@@ -1,8 +1,9 @@
-import dataclasses
+from dataclasses import dataclass, field
+from typing import List
 import torch
 
 
-@dataclasses.dataclass
+@dataclass
 class Config:
     # general settings
     seed: int = 42
@@ -18,11 +19,12 @@ class Config:
     nz: int = 128
     ngf: int = 768
     ndf: int = 768
+    bottom_width: int = 4
     use_sn: bool = True
     use_cbm: bool = True
     use_vq: bool = False
     dict_size: int = 5  # 2^10 --> 1024
-    bottom_width: int = 4
+    quant_layers: List = field(default_factory=lambda: [2, 3, 4])
 
     # training
     n_epochs: int = 30
