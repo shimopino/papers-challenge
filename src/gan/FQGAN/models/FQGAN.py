@@ -64,6 +64,7 @@ class ResNetDiscriminator(nn.Module):
         self.ndf = ndf
         self.use_vq = use_vq
         self.dict_size = dict_size
+        self.quant_layers = quant_layers
 
         self.block1 = DBlockOptimized(self.nc, self.ndf >> 4, use_sn=use_sn)
         self.block2 = DBlock(

@@ -8,8 +8,8 @@ class ProbLoss(nn.Module):
         super().__init__()
         self.loss_type = loss_type
         self.device = device
-        self.ones = torch.ones(batch_size).to(device)
-        self.zeros = torch.zeros(batch_size).to(device)
+        self.ones = torch.ones(batch_size, dtype=torch.float, device=device)
+        self.zeros = torch.zeros(batch_size, dtype=torch.float, device=device)
         self.bce = nn.BCEWithLogitsLoss()
 
     def __call__(self, logits, condition):
@@ -26,10 +26,10 @@ class ProbLoss(nn.Module):
             if condition == "gen":
                 return -torch.mean(logits)
             elif condition == "dis_real":
-                minval = torch.min(logits - 1, self.zeros[:batch_len])
+                minval = torch.min(logits - 1.0, self.zeros[:batch_len])
                 return -torch.mean(minval)
             else:
-                minval = torch.min(-logits - 1, self.zeros[:batch_len])
+                minval = torch.min(-logits - 1.0, self.zeros[:batch_len])
                 return -torch.mean(minval)
 
 
