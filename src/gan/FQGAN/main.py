@@ -15,7 +15,7 @@ from models.losses import ortho_reg, ProbLoss
 
 def main(cfg):
 
-    # logger = Logger(cfg.log_dir, cfg.flush_secs)
+    logger = Logger(cfg.log_dir, cfg.flush_secs)
 
     if cfg is not None:
         print(f"configuration: {cfg}")
@@ -35,7 +35,7 @@ def main(cfg):
 
     real_batch = next(iter(dataloader))
     print(f"sample real batch size: {real_batch[0].size()}")
-    # logger.add_image("sample", real_batch[0])
+    logger.add_image("sample", real_batch[0])
 
     netG = ResNetGenerator(cfg.nz, cfg.ngf, cfg.nc, cfg.bottom_width, cfg.use_sn).to(
         cfg.device
@@ -43,7 +43,7 @@ def main(cfg):
     print(f"Generator Memory: {count_parameters_float32(netG):.2f} MB")
 
     netD = ResNetDiscriminator(
-        cfg.nc, cfg.ndf, cfg.use_sn, cfg.use_vq, cfg.dict_size
+        cfg.nc, cfg.ndf, cfg.use_sn, cfg.use_vq, cfg.dict_size, cfg.quant_layers
     ).to(cfg.device)
     print(f"Discriminator Memory: {count_parameters_float32(netD):.2f} MB")
 
@@ -57,7 +57,7 @@ def main(cfg):
     # Create batch of latent vectors that we will use to visualize
     #  the progression of the generator
     fixed_noise = torch.randn(64, cfg.nz, device=cfg.device)
-    # logger.print_log(f"fixed noise shape: {fixed_noise.size()}")
+    logger.print_log(f"fixed noise shape: {fixed_noise.size()}")
 
     # Setup Adam optimizers for both G and D
     optimizerD = optim.Adam(netD.parameters(), lr=cfg.lrD, betas=cfg.betas)
@@ -71,7 +71,7 @@ def main(cfg):
     history = {"img_list": [], "g_losses": [], "d_losses": []}
     iters = 0
 
-    # logger.print_log("Starting Training Loop...")
+    logger.print_log("Starting Training Loop...")
 
     # For each epoch
     for epoch in range(cfg.n_epochs):
@@ -154,7 +154,8 @@ def main(cfg):
                     )
                 msg += "D(x): {:.4f} D(G(z)): {:.4f}".format(D_x, D_Gz)
 
-                # logger.print_log(msg)
+                logger.print_log(msg)
+
                 # logger.add_histogram("g_layer1", netG.layer1[0].weight.data, global_step=iters)
                 # logger.add_histogram("g_layer2", netG.layer2[0].weight.data, global_step=iters)
                 # logger.add_histogram("g_layer3", netG.layer3[0].weight.data, global_step=iters)
@@ -177,17 +178,17 @@ def main(cfg):
                 #         "d_vq4_embedding", netD.vq4.embed.data, global_step=iters
                 #     )
 
-                # logger.add_scalar("g_losses", lossG.item(), global_step=iters)
-                # logger.add_scalar("d_losses", lossD.item(), global_step=iters)
-                # if cfg.is_ortho:
-                #     logger.add_scalar(
-                #         "ortho_losses", ortho_loss.item(), global_step=iters
-                #     )
+                logger.add_scalar("g_losses", lossG.item(), global_step=iters)
+                logger.add_scalar("d_losses", lossD.item(), global_step=iters)
+                if cfg.is_ortho:
+                    logger.add_scalar(
+                        "ortho_losses", ortho_loss.item(), global_step=iters
+                    )
 
-                # logger.add_scalar("D(x)", D_x, global_step=iters)
-                # logger.add_scalar(
-                #     "D(G(z)) after optimizing Generator", D_Gz, global_step=iters
-                # )
+                logger.add_scalar("D(x)", D_x, global_step=iters)
+                logger.add_scalar(
+                    "D(G(z)) after optimizing Generator", D_Gz, global_step=iters
+                )
 
             # Save Losses for plotting later
             history["g_losses"].append(lossG.item())
@@ -203,9 +204,9 @@ def main(cfg):
 
         history["img_list"].append(make_grid(fake, padding=2, normalize=True))
         # output to tensorboard
-        # logger.add_image("img", fake, global_step=epoch)
+        logger.add_image("img", fake, global_step=epoch)
 
-    # logger.close_writers()
+    logger.close_writers()
 
 
 if __name__ == "__main__":
