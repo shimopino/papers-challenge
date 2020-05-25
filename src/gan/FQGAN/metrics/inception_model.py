@@ -1,268 +1,139 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision
-from torchvision.models.utils import load_state_dict_from_url
+"""
+Common inception utils for computing metrics, as based on the FID helper code:
+https://github.com/kwotsin/dissertation/blob/master/eval/TTUR/fid.py
+"""
+import os
+import pathlib
+import tarfile
+import time
+from urllib import request
+
+import numpy as np
+import tensorflow as tf
 
 
-FID_WEIGHTS_URL = "https://github.com/mseitzer/pytorch-fid/releases/download/fid_weights/pt_inception-2015-12-05-6726825d.pth"
+def _check_or_download_inception(inception_path):
+    """
+    Checks if the path to the inception file is valid, or downloads
+    the file if it is not present.
+    Args:
+        inception_path (str): Directory for storing the inception model.
+    Returns:
+        str: File path of the inception protobuf model.
+    """
+    # Build file path of model
+    inception_url = (
+        "http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz"
+    )
+    if inception_path is None:
+        inception_path = "/tmp"
+    inception_path = pathlib.Path(inception_path)
+    model_file = inception_path / "classify_image_graph_def.pb"
+
+    # Download model if required
+    if not model_file.exists():
+        print("Downloading Inception model")
+        fn, _ = request.urlretrieve(inception_url)
+
+        with tarfile.open(fn, mode="r") as f:
+            f.extract("classify_image_graph_def.pb", str(model_file.parent))
+
+    return str(model_file)
 
 
-class InceptionV3(nn.Module):
-    """Pretrained InceptionV3 network returning feature maps"""
+def _get_inception_layer(sess):
+    """
+    Prepares inception net for batched usage and returns pool_3 layer.
+    Args:
+        sess (Session): TensorFlow Session object.
+    Returns:
+        TensorFlow graph node representing inception model pool3 layer output.
+    """
+    # Get the output node
+    layer_name = "inception_model/pool_3:0"
+    pool3 = sess.graph.get_tensor_by_name(layer_name)
 
-    # Index of default block of inception to return,
-    # corresponds to output of final average pooling
-    DEFAULT_BLOCK_INDEX = 3
+    # Reshape to be batch size agnostic
+    ops = pool3.graph.get_operations()
+    for op_idx, op in enumerate(ops):
+        for o in op.outputs:
+            shape = o.get_shape()
+            if len(shape._dims) > 0:
+                try:
+                    shape = [s.value for s in shape]
+                except AttributeError:  # TF 2 uses None shape directly. No conversion needed.
+                    shape = shape
 
-    # Maps feature dimensionality to their output blocks indices
-    BLOCK_INDEX_BY_DIM = {
-        64: 0,  # First max pooling features
-        192: 1,  # Second max pooling featurs
-        768: 2,  # Pre-aux classifier features
-        2048: 3,  # Final average pooling features
-    }
+                new_shape = []
+                for j, s in enumerate(shape):
+                    if s == 1 and j == 0:
+                        new_shape.append(None)
+                    else:
+                        new_shape.append(s)
+                o.__dict__["_shape_val"] = tf.TensorShape(new_shape)
 
-    def __init__(
-        self,
-        output_blocks=[DEFAULT_BLOCK_INDEX],
-        resize_input=True,
-        normalize_input=True,
-        requires_grad=False,
-    ):
-        super(InceptionV3, self).__init__()
-
-        self.resize_input = resize_input
-        self.normalize_input = normalize_input
-        self.output_blocks = sorted(output_blocks)
-        self.last_needed_block = max(output_blocks)
-
-        assert self.last_needed_block <= 3, "Last possible output block index is 3"
-
-        inception = fid_inception_v3()
-
-        self.blocks = nn.ModuleList()
-        # Block 0: input to maxpool1
-        block0 = [
-            inception.Conv2d_1a_3x3,
-            inception.Conv2d_2a_3x3,
-            inception.Conv2d_2b_3x3,
-            nn.MaxPool2d(kernel_size=3, stride=2),
-        ]
-        self.blocks.append(nn.Sequential(*block0))
-
-        # Block 1: maxpool1 to maxpool2
-        if self.last_needed_block >= 1:
-            block1 = [
-                inception.Conv2d_3b_1x1,
-                inception.Conv2d_4a_3x3,
-                nn.MaxPool2d(kernel_size=3, stride=2),
-            ]
-            self.blocks.append(nn.Sequential(*block1))
-
-        # Block 2: maxpool2 to aux classifier
-        if self.last_needed_block >= 2:
-            block2 = [
-                inception.Mixed_5b,
-                inception.Mixed_5c,
-                inception.Mixed_5d,
-                inception.Mixed_6a,
-                inception.Mixed_6b,
-                inception.Mixed_6c,
-                inception.Mixed_6d,
-                inception.Mixed_6e,
-            ]
-            self.blocks.append(nn.Sequential(*block2))
-
-        # Block 3: aux classifier to final avgpool
-        if self.last_needed_block >= 3:
-            block3 = [
-                inception.Mixed_7a,
-                inception.Mixed_7b,
-                inception.Mixed_7c,
-                nn.AdaptiveAvgPool2d(output_size=(1, 1)),
-            ]
-            self.blocks.append(nn.Sequential(*block3))
-
-        for param in self.parameters():
-            param.requires_grad = requires_grad
-
-    def forward(self, inp):
-
-        outp = []
-        x = inp
-
-        if self.resize_input:
-            x = F.interpolate(x, size=(299, 299), mode="bilinear", align_corners=False)
-
-        if self.normalize_input:
-            x = 2 * x - 1  # Scale from range (0, 1) to range (-1, 1)
-
-        for idx, block in enumerate(self.blocks):
-            x = block(x)
-            if idx in self.output_blocks:
-                outp.append(x)
-
-            if idx == self.last_needed_block:
-                break
-
-        return outp
+    return pool3
 
 
-def fid_inception_v3():
+def get_activations(images, sess, batch_size=50, verbose=True):
+    """
+    Calculates the activations of the pool_3 layer for all images.
+    Args:
+        images (ndarray): Numpy array of shape (N, C, H, W) with values ranging
+            in the range [0, 255].
+        sess (Session): TensorFlow Session object.
+        batch_size (int): The batch size to use for inference.
+        verbose (bool): If True, prints out logging data for batch inference.
+    Returns:
+        ndarray: Numpy array of shape (N, 2048) representing the pool3 features from the
+        inception model.
+    """
+    # Get output layer.
+    inception_layer = _get_inception_layer(sess)
 
-    inception = _inception_v3(num_classes=1008, aux_logits=False, pretrained=False)
-    inception.Mixed_5b = FIDInceptionA(192, pool_features=32)
-    inception.Mixed_5c = FIDInceptionA(256, pool_features=64)
-    inception.Mixed_5d = FIDInceptionA(288, pool_features=64)
-    inception.Mixed_6b = FIDInceptionC(768, channels_7x7=128)
-    inception.Mixed_6c = FIDInceptionC(768, channels_7x7=160)
-    inception.Mixed_6d = FIDInceptionC(768, channels_7x7=160)
-    inception.Mixed_6e = FIDInceptionC(768, channels_7x7=192)
-    inception.Mixed_7b = FIDInceptionE_1(1280)
-    inception.Mixed_7c = FIDInceptionE_2(2048)
+    # Inference variables
+    batch_size = min(batch_size, images.shape[0])
+    num_batches = images.shape[0] // batch_size
 
-    state_dict = load_state_dict_from_url(FID_WEIGHTS_URL, progress=True)
-    inception.load_state_dict(state_dict)
-    return inception
+    # Get features
+    pred_arr = np.empty((images.shape[0], 2048))
+    for i in range(num_batches):
+        start_time = time.time()
 
+        start = i * batch_size
+        end = start + batch_size
+        batch = images[start:end]
+        pred = sess.run(inception_layer, {"inception_model/ExpandDims:0": batch})
+        pred_arr[start:end] = pred.reshape(batch_size, -1)
 
-def _inception_v3(*args, **kwargs):
+        if verbose:
+            print(
+                "\rINFO: Propagated batch %d/%d (%.4f sec/batch)"
+                % (i + 1, num_batches, time.time() - start_time),
+                end="",
+                flush=True,
+            )
 
-    try:
-        version = tuple(map(int, torchvision.__version__.split(".")[:2]))
-    except ValueError:
-        # Just a caution against weird version strings
-        version = (0,)
-
-    if version >= (0, 6):
-        kwargs["init_weights"] = False
-
-    return torchvision.models.inception_v3(*args, **kwargs)
-
-
-class FIDInceptionA(torchvision.models.inception.InceptionA):
-    """InceptionA block patched for FID computation"""
-
-    def __init__(self, in_channels, pool_features):
-        super(FIDInceptionA, self).__init__(in_channels, pool_features)
-
-    def forward(self, x):
-        branch1x1 = self.branch1x1(x)
-
-        branch5x5 = self.branch5x5_1(x)
-        branch5x5 = self.branch5x5_2(branch5x5)
-
-        branch3x3dbl = self.branch3x3dbl_1(x)
-        branch3x3dbl = self.branch3x3dbl_2(branch3x3dbl)
-        branch3x3dbl = self.branch3x3dbl_3(branch3x3dbl)
-
-        # Patch: Tensorflow's average pool does not use the padded zero's in
-        # its average calculation
-        branch_pool = F.avg_pool2d(
-            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
-        )
-        branch_pool = self.branch_pool(branch_pool)
-
-        outputs = [branch1x1, branch5x5, branch3x3dbl, branch_pool]
-        return torch.cat(outputs, 1)
+    return pred_arr
 
 
-class FIDInceptionC(torchvision.models.inception.InceptionC):
-    """InceptionC block patched for FID computation"""
+def create_inception_graph(inception_path):
+    """
+    Creates a graph from saved GraphDef file.
+    Args:
+        inception_path (str): Directory for storing the inception model.
+    Returns:
+        None
+    """
+    if not os.path.exists(inception_path):
+        os.makedirs(inception_path)
 
-    def __init__(self, in_channels, channels_7x7):
-        super(FIDInceptionC, self).__init__(in_channels, channels_7x7)
+    # Get inception model file path
+    model_file = _check_or_download_inception(inception_path)
 
-    def forward(self, x):
-        branch1x1 = self.branch1x1(x)
+    # Creates graph from saved graph_def.pb.
+    with tf.io.gfile.GFile(model_file, "rb") as f:
+        graph_def = tf.compat.v1.GraphDef()
+        graph_def.ParseFromString(f.read())
+        _ = tf.import_graph_def(graph_def, name="inception_model")
 
-        branch7x7 = self.branch7x7_1(x)
-        branch7x7 = self.branch7x7_2(branch7x7)
-        branch7x7 = self.branch7x7_3(branch7x7)
-
-        branch7x7dbl = self.branch7x7dbl_1(x)
-        branch7x7dbl = self.branch7x7dbl_2(branch7x7dbl)
-        branch7x7dbl = self.branch7x7dbl_3(branch7x7dbl)
-        branch7x7dbl = self.branch7x7dbl_4(branch7x7dbl)
-        branch7x7dbl = self.branch7x7dbl_5(branch7x7dbl)
-
-        # Patch: Tensorflow's average pool does not use the padded zero's in
-        # its average calculation
-        branch_pool = F.avg_pool2d(
-            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
-        )
-        branch_pool = self.branch_pool(branch_pool)
-
-        outputs = [branch1x1, branch7x7, branch7x7dbl, branch_pool]
-        return torch.cat(outputs, 1)
-
-
-class FIDInceptionE_1(torchvision.models.inception.InceptionE):
-    """First InceptionE block patched for FID computation"""
-
-    def __init__(self, in_channels):
-        super(FIDInceptionE_1, self).__init__(in_channels)
-
-    def forward(self, x):
-        branch1x1 = self.branch1x1(x)
-
-        branch3x3 = self.branch3x3_1(x)
-        branch3x3 = [
-            self.branch3x3_2a(branch3x3),
-            self.branch3x3_2b(branch3x3),
-        ]
-        branch3x3 = torch.cat(branch3x3, 1)
-
-        branch3x3dbl = self.branch3x3dbl_1(x)
-        branch3x3dbl = self.branch3x3dbl_2(branch3x3dbl)
-        branch3x3dbl = [
-            self.branch3x3dbl_3a(branch3x3dbl),
-            self.branch3x3dbl_3b(branch3x3dbl),
-        ]
-        branch3x3dbl = torch.cat(branch3x3dbl, 1)
-
-        # Patch: Tensorflow's average pool does not use the padded zero's in
-        # its average calculation
-        branch_pool = F.avg_pool2d(
-            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
-        )
-        branch_pool = self.branch_pool(branch_pool)
-
-        outputs = [branch1x1, branch3x3, branch3x3dbl, branch_pool]
-        return torch.cat(outputs, 1)
-
-
-class FIDInceptionE_2(torchvision.models.inception.InceptionE):
-    """Second InceptionE block patched for FID computation"""
-
-    def __init__(self, in_channels):
-        super(FIDInceptionE_2, self).__init__(in_channels)
-
-    def forward(self, x):
-        branch1x1 = self.branch1x1(x)
-
-        branch3x3 = self.branch3x3_1(x)
-        branch3x3 = [
-            self.branch3x3_2a(branch3x3),
-            self.branch3x3_2b(branch3x3),
-        ]
-        branch3x3 = torch.cat(branch3x3, 1)
-
-        branch3x3dbl = self.branch3x3dbl_1(x)
-        branch3x3dbl = self.branch3x3dbl_2(branch3x3dbl)
-        branch3x3dbl = [
-            self.branch3x3dbl_3a(branch3x3dbl),
-            self.branch3x3dbl_3b(branch3x3dbl),
-        ]
-        branch3x3dbl = torch.cat(branch3x3dbl, 1)
-
-        # Patch: The FID Inception model uses max pooling instead of average
-        # pooling. This is likely an error in this specific Inception
-        # implementation, as other Inception models use average pooling here
-        # (which matches the description in the paper).
-        branch_pool = F.max_pool2d(x, kernel_size=3, stride=1, padding=1)
-        branch_pool = self.branch_pool(branch_pool)
-
-        outputs = [branch1x1, branch3x3, branch3x3dbl, branch_pool]
-        return torch.cat(outputs, 1)
