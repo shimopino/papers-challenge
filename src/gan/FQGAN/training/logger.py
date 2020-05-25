@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from logging import getLogger, StreamHandler, FileHandler, Formatter, INFO
 from torch.utils.tensorboard import SummaryWriter
@@ -9,13 +10,14 @@ class Logger:
 
         self.log_dir = Path(log_dir)
         self.flush_secs = flush_secs
+        self.dirname = time.strftime("%Y-%m-%d_%H-%M-%S")
         self.logger = self._build_logger()
         self.writers = {}
 
     def _build_logger(self):
 
         # check log directory exists
-        self.log_dir.mkdir(parents=True, exist_ok=True)
+        self.log_dir.joinpath(self.dirname).mkdir(parents=True, exist_ok=True)
 
         logger = getLogger("sample")
         logger.setLevel(INFO)
@@ -27,7 +29,7 @@ class Logger:
         stm_handler.setLevel(INFO)
         stm_handler.setFormatter(fmt)
         # file handler
-        file_handler = FileHandler(self.log_dir / "logs.txt", mode="w")
+        file_handler = FileHandler(self.log_dir / self.dirname / "logs.txt", mode="w")
         file_handler.setLevel(INFO)
         file_handler.setFormatter(fmt)
         # add handler to logger
@@ -41,7 +43,8 @@ class Logger:
 
     def _build_writer(self, metrics):
         writer = SummaryWriter(
-            log_dir=self.log_dir / "data" / metrics, flush_secs=self.flush_secs
+            log_dir=self.log_dir / self.dirname / "data" / metrics,
+            flush_secs=self.flush_secs,
         )
         return writer
 
