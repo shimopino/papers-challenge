@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision.utils import make_grid
+from apex import amp
 
 from config import Config
 from datasets import data_utils
@@ -21,8 +22,6 @@ def main(cfg):
 
     if cfg.seed:
         set_seed(cfg.seed)
-        print(f"{cfg.seed}")
-
     print(f"device setting: {cfg.device}")
 
     dataset = data_utils.get_celeba_dataset(
@@ -64,6 +63,11 @@ def main(cfg):
     optimizerD = optim.Adam(netD.parameters(), lr=cfg.lrD, betas=cfg.betas)
     optimizerG = optim.Adam(netG.parameters(), lr=cfg.lrG, betas=cfg.betas)
 
+    if cfg.amp:
+        opt_level = "O1"
+        netG, optimizerG = amp.initialize(netG, optimizerG, opt_level=opt_level)
+        netD, optimizerD = amp.initialize(netD, optimizerD, opt_level=opt_level)
+
     history = {"img_list": [], "g_losses": [], "d_losses": []}
     iters = 0
 
@@ -103,7 +107,11 @@ def main(cfg):
 
             # Add the gradients from the all-real and all-fake batches
             lossD = lossD_real + lossD_fake
-            lossD.backward()
+            if cfg.amp:
+                with amp.scale_loss(lossD, optimizerD) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                lossD.backward()
             # Update D
             optimizerD.step()
 
@@ -122,7 +130,11 @@ def main(cfg):
                 lossG += ortho_loss
 
             # Calculate gradients for G
-            lossG.backward()
+            if cfg.amp:
+                with amp.scale_loss(lossG, optimizerG) as scaled_loss:
+                    scaled_loss.backward()
+            else:
+                lossG.backward()
             # Update G
             optimizerG.step()
 
