@@ -8,6 +8,7 @@ class Config:
     # general settings
     seed: int = 42
     ngpu: int = 1
+    amp: bool = True
 
     # dataset
     datapath: str = "../data/celeba"
