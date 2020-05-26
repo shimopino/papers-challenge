@@ -2,9 +2,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-ARG BASE_IMAGE
-RUN echo "Installing Apex on top of ${BASE_IMAGE}"
-
 # install git
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
@@ -29,4 +26,13 @@ RUN SHA=ToUcHMe git clone https://github.com/NVIDIA/apex.git
 WORKDIR /tmp/unique_for_apex/apex
 RUN pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 
-WORKDIR /home/src
+# share UID from local host --> set the same authentication
+ARG UID=1000
+ARG USERNAME=devpapers
+RUN useradd ${USERNAME} -u ${UID} -G sudo -s /bin/bash -m  && \
+  echo ${USERNAME}' ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+  chown ${USERNAME}:${USERNAME} /home/${USERNAME}
+
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+ENV HOME /home/${USERNAME}
