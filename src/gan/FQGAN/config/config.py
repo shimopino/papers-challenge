@@ -9,6 +9,7 @@ class Config:
     seed: int = 42
     ngpu: int = 1
     amp: bool = True
+    opt_level: str = "O1"
 
     # dataset
     datapath: str = "../data/celeba"
@@ -24,6 +25,7 @@ class Config:
     use_sn: bool = True
     use_cbm: bool = True
     use_vq: bool = False
+    use_ema_vq: bool = False
     dict_size: int = 5  # 2^10 --> 1024
     quant_layers: List = field(default_factory=lambda: [2, 3, 4])
 
