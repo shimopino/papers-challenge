@@ -89,6 +89,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/100)
 - [[arXiv:1907.04312] Positional Normalization](https://arxiv.org/abs/1907.04312)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/52)
+- [[arXiv:1910.05253] Adversarial Colorization Of Icons Based On Structure And Color Conditions](https://arxiv.org/abs/1910.05253)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/125)
 - [[arXiv:2002.05638] GANILLA: Generative Adversarial Networks for Image to Illustration Translation](https://arxiv.org/abs/2002.05638)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/9)
 - [[arXiv:2003.00187] Augmented Cyclic Consistency Regularization for Unpaired Image-to-Image Translation](https://arxiv.org/abs/2003.00187)
