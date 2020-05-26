@@ -131,3 +131,22 @@ VSCodeを開いているフォルダ上に`main.py`が存在しているとき�
 }
 ```
 
+## DockerfileのUID
+
+Dockerを起動してプロセスを確認すると、rootユーザーによる実行になっていることがわかる。VSCodeのRemote-Containersを使用してDockerコンテナ環境を構築するとrootユーザーによるファイル編集となってしまい、ホスト側から編集することができなくなってしまう。
+
+そこでDockerfileにユーザー設定を追加するか、`devcontainer.json`に`remoteUser`属性を設定する必要がある。
+
+以下のようにUIDとUSERNAMEを設定したDockerfileを定義する。
+
+```dockerfile
+ARG UID
+ARG USERNAME
+RUN useradd ${USERNAME} -u ${UID} -G sudo -s /bin/bash -m  && \
+    echo ${USERNAME}' ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    chown ${USERNAME}:${USERNAME} /home/${USERNAME}
+
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+ENV HOME /home/${USERNAME}
+```
