@@ -28,6 +28,9 @@ fi
 
 # add .gitignore
 if [ $IS_ADDED ]; then
-    echo  "*" >> "$TARGET_DIR/.gitignore"
-    echo  "!.gitignore" >> "$TARGET_DIR/.gitignore"
+    FILE="$TARGET_DIR/.gitignore"
+    if [ ! -f "$FILE" ]; then
+        echo  "*" >> "$FILE"
+        echo  "!.gitignore" >> "$FILE"    
+    fi
 fi
