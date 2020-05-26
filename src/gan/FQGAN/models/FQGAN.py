@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from .modules import SNLinear, SNConv2d
 from .resblocks import GBlock, DBlock, DBlockOptimized
-from .vq import VectorQuantizerEMA
+from .vq import VectorQuantizerEMA, VectorQuantizer
 
 
 class ResNetGenerator(nn.Module):
@@ -57,12 +57,20 @@ class ResNetGenerator(nn.Module):
 
 class ResNetDiscriminator(nn.Module):
     def __init__(
-        self, nc, ndf, use_sn=False, use_vq=True, dict_size=5, quant_layers=None
+        self,
+        nc,
+        ndf,
+        use_sn=False,
+        use_vq=True,
+        dict_size=5,
+        quant_layers=None,
+        use_ema_vq=True,
     ):
         super(ResNetDiscriminator, self).__init__()
         self.nc = nc
         self.ndf = ndf
         self.use_vq = use_vq
+        self.use_ema_vq = use_ema_vq
         self.dict_size = dict_size
         self.quant_layers = quant_layers
 
@@ -90,7 +98,9 @@ class ResNetDiscriminator(nn.Module):
                 setattr(
                     self,
                     f"vq{layer}",
-                    VectorQuantizerEMA(out_channels, 2 ** self.dict_size),
+                    VectorQuantizerEMA(out_channels, 2 ** self.dict_size)
+                    if self.use_ema_vq
+                    else VectorQuantizer(out_channels, 2 ** self.dict_size),
                 )
 
         # Initialise the weights
