@@ -13,43 +13,68 @@ from models.FQGAN import ResNetGenerator, ResNetDiscriminator
 from models.losses import ortho_reg, ProbLoss
 
 
-def main(cfg):
-
-    logger = Logger(cfg.log_dir, cfg.flush_secs)
-
+def setup(cfg, logger):
     if cfg is not None:
-        print(f"configuration: {cfg}")
+        logger.print_log(f"configuration: {cfg}")
 
     if cfg.seed:
         set_seed(cfg.seed)
-    print(f"device setting: {cfg.device}")
+        logger.print_log(f"seed setting: {cfg.seed}")
 
+    logger.print_log(f"device setting: {cfg.device}")
+
+
+def build_dataset(cfg, logger):
     dataset = data_utils.get_celeba_dataset(
         root=cfg.datapath, image_size=cfg.image_size
     )
-    print(len(dataset))
+    logger.print_log(len(dataset))
 
     dataloader = DataLoader(
         dataset, batch_size=cfg.batch_size, num_workers=cfg.num_workers, shuffle=True
     )
 
     real_batch = next(iter(dataloader))
-    print(f"sample real batch size: {real_batch[0].size()}")
+    logger.print_log(f"sample real batch size: {real_batch[0].size()}")
     logger.add_image("sample", real_batch[0])
 
+    return dataset, dataloader
+
+
+def build_model(cfg, logger):
     netG = ResNetGenerator(cfg.nz, cfg.ngf, cfg.nc, cfg.bottom_width, cfg.use_sn).to(
         cfg.device
     )
-    print(f"Generator Memory: {count_parameters_float32(netG):.2f} MB")
+    logger.print_log(f"Generator Memory: {count_parameters_float32(netG):.2f} MB")
 
     netD = ResNetDiscriminator(
         cfg.nc, cfg.ndf, cfg.use_sn, cfg.use_vq, cfg.dict_size, cfg.quant_layers
     ).to(cfg.device)
-    print(f"Discriminator Memory: {count_parameters_float32(netD):.2f} MB")
+    logger.print_log(f"Discriminator Memory: {count_parameters_float32(netD):.2f} MB")
 
     if (cfg.is_cuda) and (cfg.ngpu > 1):
         netG = nn.DataParallel(netG, list(range(cfg.ngpu)))
         netD = nn.DataParallel(netD, list(range(cfg.ngpu)))
+
+    # Setup Adam optimizers for both G and D
+    optimizerD = optim.Adam(netD.parameters(), lr=cfg.lrD, betas=cfg.betas)
+    optimizerG = optim.Adam(netG.parameters(), lr=cfg.lrG, betas=cfg.betas)
+
+    if cfg.amp:
+        netG, optimizerG = amp.initialize(netG, optimizerG, opt_level=cfg.opt_level)
+        netD, optimizerD = amp.initialize(netD, optimizerD, opt_level=cfg.opt_level)
+
+    return netG, netD, optimizerD, optimizerG
+
+
+def main(cfg):
+
+    logger = Logger(cfg.log_dir, cfg.flush_secs)
+    setup(cfg, logger)
+
+    dataset, dataloader = build_dataset(cfg, logger)
+
+    netG, netD, optimizerG, optimizerD = build_model(cfg, logger)
 
     # Initialize BCELoss function
     criterion = ProbLoss(cfg.loss_type, cfg.batch_size, cfg.device)
@@ -58,15 +83,6 @@ def main(cfg):
     #  the progression of the generator
     fixed_noise = torch.randn(64, cfg.nz, device=cfg.device)
     logger.print_log(f"fixed noise shape: {fixed_noise.size()}")
-
-    # Setup Adam optimizers for both G and D
-    optimizerD = optim.Adam(netD.parameters(), lr=cfg.lrD, betas=cfg.betas)
-    optimizerG = optim.Adam(netG.parameters(), lr=cfg.lrG, betas=cfg.betas)
-
-    if cfg.amp:
-        opt_level = "O1"
-        netG, optimizerG = amp.initialize(netG, optimizerG, opt_level=opt_level)
-        netD, optimizerD = amp.initialize(netD, optimizerD, opt_level=opt_level)
 
     history = {"img_list": [], "g_losses": [], "d_losses": []}
     iters = 0
@@ -123,19 +139,20 @@ def main(cfg):
             output, quant_loss_G, _, _ = netD(fake)
             # Calculate G's loss based on this output
             lossG = criterion(output, "gen")
-            if cfg.use_vq:
-                lossG += quant_loss_G
-            if cfg.is_ortho:
-                ortho_loss = ortho_reg(netG, factor=cfg.factor, device=cfg.device)
-                lossG += ortho_loss
+            # if cfg.use_vq:
+            #     lossG += quant_loss_G
+            # if cfg.is_ortho:
+            #     ortho_loss = ortho_reg(netG, factor=cfg.factor, device=cfg.device)
+            #     lossG += ortho_loss
 
             # Calculate gradients for G
-            if cfg.amp:
-                with amp.scale_loss(lossG, optimizerG) as scaled_loss:
-                    scaled_loss.backward()
-            else:
-                lossG.backward()
-            # Update G
+            with torch.autograd.detect_anomaly():
+                if cfg.amp:
+                    with amp.scale_loss(lossG, optimizerG) as scaled_loss:
+                        scaled_loss.backward()
+                else:
+                    lossG.backward()
+            # # Update G
             optimizerG.step()
 
             # Output training stats
@@ -180,10 +197,10 @@ def main(cfg):
 
                 logger.add_scalar("g_losses", lossG.item(), global_step=iters)
                 logger.add_scalar("d_losses", lossD.item(), global_step=iters)
-                if cfg.is_ortho:
-                    logger.add_scalar(
-                        "ortho_losses", ortho_loss.item(), global_step=iters
-                    )
+                # if cfg.is_ortho:
+                #     logger.add_scalar(
+                #         "ortho_losses", ortho_loss.item(), global_step=iters
+                #     )
 
                 logger.add_scalar("D(x)", D_x, global_step=iters)
                 logger.add_scalar(
