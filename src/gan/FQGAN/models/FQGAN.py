@@ -113,7 +113,7 @@ class ResNetDiscriminator(nn.Module):
             h = getattr(self, f"block{layer}")(h)
 
             if (self.use_vq) and (layer in self.quant_layers):
-                h, loss, ppl = getattr(self, f"vq{layer}")(h)
+                h, loss, ppl, embed_idx = getattr(self, f"vq{layer}")(h)
                 quant_loss += loss
 
         h = self.activation(h)
@@ -122,9 +122,9 @@ class ResNetDiscriminator(nn.Module):
         output = self.l6(h).squeeze()
 
         if self.use_vq:
-            return output, loss, ppl
+            return output, loss, ppl, embed_idx
         else:
-            return output, None, None
+            return output, None, None, None
 
     def compute_probs(self, output_real, output_fake):
         D_x = torch.sigmoid(output_real).mean().item()

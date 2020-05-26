@@ -3,6 +3,64 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+class VectorQuantizer(nn.Module):
+    def __init__(self, emb_dim, num_emb, commitment=0.25, decay=0.99, epsilon=1e-5):
+        super(VectorQuantizerEMA, self).__init__()
+
+        self.emb_dim = emb_dim
+        self.num_emb = num_emb
+        self.commitment = commitment
+        self.decay = decay
+        self.epsilon = epsilon
+
+        embed = torch.randn(emb_dim, num_emb)
+        self.register_buffer("embed", embed)
+        self.register_buffer("cluster_size", torch.zeros(num_emb))
+        self.register_buffer("ema_embed", embed.clone())
+
+    def forward(self, inputs):
+        # [B, C=D, H, W] --> [B, H, W, C=D]
+        inputs = inputs.permute(0, 2, 3, 1).contiguous()
+        inputs_shape = inputs.size()
+
+        # flatten: [B, H, W, C=D] --> [BxHxW=N, D]
+        flatten = inputs.view(-1, self.emb_dim)
+
+        # distance: d(W[N, D], E[D, K]) <-- [N, K]
+        distance = (
+            flatten.pow(2).sum(1, keepdim=True)
+            - 2 * flatten @ self.embed
+            + self.embed.pow(2).sum(0, keepdim=True)
+        )
+
+        # minimum index: [N, K] --> [N, ]
+        embed_idx = torch.argmin(distance, dim=1)
+
+        # set OneHot label: [N, ] --> [N, K]
+        embed_onehot = F.one_hot(embed_idx, num_classes=self.num_emb).type(
+            flatten.dtype
+        )
+
+        # quantize: [N, ] --> [B, H, W, ]
+        embed_idx = embed_idx.view(*inputs_shape[:-1])
+        # quantize: [B, H, W, ] embed [K, D] --> [B, H, W, D]
+        quantize = F.embedding(embed_idx, self.embed.transpose(0, 1))
+
+        # loss
+        e_latent_loss = F.mse_loss(quantize.detach(), inputs)
+        # e_latent_loss = (quantize.detach() - inputs).pow(2).mean()
+        q_latent_loss = F.mse_loss(quantize, inputs.detach())
+        loss = q_latent_loss + self.commitment * e_latent_loss
+
+        # Straight Through Estimator
+        quantize = inputs + (quantize - inputs).detach()
+        # average probability: [N, K] --> [N, ]
+        avg_probs = torch.mean(embed_onehot, dim=0)
+        perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
+
+        return quantize.permute(0, 3, 1, 2).contiguous(), loss, perplexity, embed_idx
+
+
 class VectorQuantizerEMA(nn.Module):
     def __init__(self, emb_dim, num_emb, commitment=0.25, decay=0.99, epsilon=1e-5):
         super(VectorQuantizerEMA, self).__init__()
@@ -45,7 +103,6 @@ class VectorQuantizerEMA(nn.Module):
         embed_idx = embed_idx.view(*inputs_shape[:-1])
         # quantize: [B, H, W, ] embed [K, D] --> [B, H, W, D]
         quantize = F.embedding(embed_idx, self.embed.transpose(0, 1))
-        quantize = quantize.view(*inputs_shape)
 
         # train embedding vector only when model.train() not model.eval()
         if self.training:
@@ -88,7 +145,7 @@ class VectorQuantizerEMA(nn.Module):
         avg_probs = torch.mean(embed_onehot, dim=0)
         perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
 
-        return quantize.permute(0, 3, 1, 2).contiguous(), loss, perplexity
+        return quantize.permute(0, 3, 1, 2).contiguous(), loss, perplexity, embed_idx
 
 
 if __name__ == "__main__":
@@ -96,5 +153,5 @@ if __name__ == "__main__":
     inputs = torch.randn(100, 32, 64, 64)
 
     vq.train()
-    h, loss, ppl = vq(inputs)
+    h, loss, ppl, embed_idx = vq(inputs)
     print(h.shape)

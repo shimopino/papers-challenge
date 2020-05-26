@@ -90,7 +90,7 @@ def main(cfg):
             # Train with all-real batch
             netD.zero_grad()
             # Forward pass real batch through D
-            output_real, quant_loss_real, ppl_real = netD(real_imgs)
+            output_real, quant_loss_real, ppl_real, embed_idx = netD(real_imgs)
             # Calculate loss on all-real batch
             lossD_real = criterion(output_real, "dis_real")
             if cfg.use_vq:
@@ -99,7 +99,7 @@ def main(cfg):
             # Train with all-fake batch
             fake = netG.generate_images(bs, cfg.device)
             # Classify all fake batch with D
-            output_fake, quant_loss_fake, ppl_fake = netD(fake.detach())
+            output_fake, quant_loss_fake, ppl_fake, embed_idx = netD(fake.detach())
             # Calculate D's loss on the all-fake batch
             lossD_fake = criterion(output_fake, "dis_fake")
             if cfg.use_vq:
@@ -120,7 +120,7 @@ def main(cfg):
             ###########################
             netG.zero_grad()
             # Since we just updated D, perform another forward pass of all-fake batch through D
-            output, quant_loss_G, _ = netD(fake)
+            output, quant_loss_G, _, _ = netD(fake)
             # Calculate G's loss based on this output
             lossG = criterion(output, "gen")
             if cfg.use_vq:
