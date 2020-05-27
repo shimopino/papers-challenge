@@ -14,6 +14,18 @@ class GBlock(nn.Module):
         num_classes=0,
         use_sn=False,
     ):
+        """
+        Resblock for Generator to deepen the model.
+        This module uses bilinear interpolation to upsample inputs
+
+        Args:
+            in_channels (int): The channel size of input feature map
+            out_channels (int): The channel size of output feature map
+            hidden_channels (int, optional): The channel size of hidden feature map. If None, this is equals to out_channels.
+            upsample (bool, optional): If True, upsamples the input feature map. Defaults to False.
+            num_classes (int, optional): If more than 0, uses conditional batch norm instead. Defaults to 0.
+            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
+        """
         super(GBlock, self).__init__()
 
         self.in_channels = in_channels
@@ -21,53 +33,64 @@ class GBlock(nn.Module):
         self.hidden_channels = (
             hidden_channels if hidden_channels is not None else out_channels
         )
-        self.learnable_sc = in_channels != out_channels or upsample
+        self.learnable_shortcut_conv = (in_channels != out_channels) or upsample
         self.upsample = upsample
         self.num_classes = num_classes
         self.use_sn = use_sn
 
-        self.c1 = SNConv2d(use_sn, self.in_channels, self.hidden_channels, 3, 1, 1)
-        self.c2 = SNConv2d(use_sn, self.hidden_channels, self.out_channels, 3, 1, 1)
+        if self.use_sn:
+            self.conv1 = SNConv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
+            self.conv2 = SNConv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
+        else:
+            self.conv1 = nn.Conv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
+            self.conv2 = nn.Conv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
 
         if self.num_classes == 0:
-            self.b1 = nn.BatchNorm2d(self.in_channels)
-            self.b2 = nn.BatchNorm2d(self.hidden_channels)
+            self.bn1 = nn.BatchNorm2d(self.in_channels)
+            self.bn2 = nn.BatchNorm2d(self.hidden_channels)
         else:
-            self.b1 = ConditionalBatchNorm2d(self.in_channels, self.num_classes)
-            self.b2 = ConditionalBatchNorm2d(self.hidden_channels, self.num_classes)
+            self.cbn1 = ConditionalBatchNorm2d(self.in_channels, self.num_classes)
+            self.cbn2 = ConditionalBatchNorm2d(self.hidden_channels, self.num_classes)
 
-        self.activation = nn.ReLU(True)
+        self.activation = nn.ReLU(inplace=True)
 
-        nn.init.xavier_uniform_(self.c1.weight.data, math.sqrt(2.0))
-        nn.init.xavier_uniform_(self.c2.weight.data, math.sqrt(2.0))
+        nn.init.xavier_uniform_(self.conv1.weight.data, math.sqrt(2.0))
+        nn.init.xavier_uniform_(self.conv2.weight.data, math.sqrt(2.0))
 
         # Shortcut layer
-        if self.learnable_sc:
-            self.c_sc = SNConv2d(use_sn, self.in_channels, self.out_channels, 1, 1, 0)
-            nn.init.xavier_uniform_(self.c_sc.weight.data, 1.0)
+        if self.learnable_shortcut_conv:
+            if self.use_sn:
+                self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
+            else:
+                self.shortcut_conv = nn.Conv2d(self.in_channels, self.out_channels, 1, 1, 0)
+            nn.init.xavier_uniform_(self.shortcut_conv.weight.data, 1.0)
 
     def _upsample_conv(self, x, conv):
 
-        return conv(
-            F.interpolate(x, scale_factor=2, mode="bilinear", align_corners=False)
-        )
+        return conv(F.interpolate(x, scale_factor=2, mode="bilinear", align_corners=False))
 
     def _residual(self, x, y=None):
+        """
+        The input feature map has to come just after previous layer convolution.
+        """
 
         h = x
-        h = self.b1(h) if y is None else self.b1(h, y)
+        h = self.bn1(h) if y is None else self.cbn1(h, y)
         h = self.activation(h)
-        h = self._upsample_conv(h, self.c1) if self.upsample else self.c1(h)
-        h = self.b2(h) if y is None else self.b1(h, y)
+        h = self._upsample_conv(h, self.conv1) if self.upsample else self.conv1(h)
+        h = self.bn2(h) if y is None else self.cbn1(h, y)
         h = self.activation(h)
-        h = self.c2(h)
+        h = self.conv2(h)
 
         return h
 
     def _shortcut(self, x):
 
         if self.learnable_sc:
-            x = self._upsample_conv(x, self.c_sc) if self.upsample else self.c_sc(x)
+            if self.upsample:
+                x = self._upsample_conv(x, self.shortcut_conv)
+            else:
+                x = self.c_sc(x)
 
         return x
 
@@ -77,36 +100,55 @@ class GBlock(nn.Module):
 
 
 class DBlockOptimized(nn.Module):
-    def __init__(self, in_channels, out_channels, use_sn=True):
-        super().__init__()
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        use_sn=True
+    ):
+        """
+        Resblock for the First Layer of Discriminator to definitely downsample inputs.
+        Follow the Official SNGAN inplementation by chainer.
+
+        Args:
+            in_channels (int): The channel size of input feature map
+            out_channels (int): The channel size of output feature map
+            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
+        """
+        super(DBlockOptimized, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.use_sn = use_sn
 
         # Build Layers
-        self.c1 = SNConv2d(use_sn, self.in_channels, self.out_channels, 3, 1, 1)
-        self.c2 = SNConv2d(use_sn, self.out_channels, self.out_channels, 3, 1, 1)
-        self.c_sc = SNConv2d(use_sn, self.in_channels, self.out_channels, 1, 1, 0)
+        if self.use_sn:
+            self.conv1 = SNConv2d(self.in_channels, self.out_channels, 3, 1, 1)
+            self.conv2 = SNConv2d(self.out_channels, self.out_channels, 3, 1, 1)
+            self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
+        else:
+            self.conv1 = nn.Conv2d(self.in_channels, self.out_channels, 3, 1, 1)
+            self.conv2 = nn.Conv2d(self.out_channels, self.out_channels, 3, 1, 1)
+            self.shortcut_conv = nn.Conv2d(self.in_channels, self.out_channels, 1, 1, 0)
 
-        self.activation = nn.ReLU(True)
+        self.activation = nn.LeakyReLU(0.2, inplace=True)
 
-        nn.init.xavier_uniform_(self.c1.weight.data, math.sqrt(2.0))
-        nn.init.xavier_uniform_(self.c2.weight.data, math.sqrt(2.0))
-        nn.init.xavier_uniform_(self.c_sc.weight.data, 1.0)
+        nn.init.xavier_uniform_(self.conv1.weight.data, math.sqrt(2.0))
+        nn.init.xavier_uniform_(self.conv2.weight.data, math.sqrt(2.0))
+        nn.init.xavier_uniform_(self.shortcut_conv.weight.data, math.sqrt(2.0))
 
     def _residual(self, x):
 
         h = x
-        h = self.c1(h)
+        h = self.conc1(h)
         h = self.activation(h)
-        h = self.c2(h)
+        h = self.conv2(h)
         h = F.avg_pool2d(h, 2)
 
         return h
 
     def _shortcut(self, x):
 
-        return self.c_sc(F.avg_pool2d(x, 2))
+        return self.shortcut_conv(F.avg_pool2d(x, 2))
 
     def forward(self, x):
 
@@ -122,6 +164,16 @@ class DBlock(nn.Module):
         downsample=False,
         use_sn=True,
     ):
+        """
+        Resblock for Discriminator to deepen the layers.
+
+        Args:
+            in_channels (int): The channel size of input feature map
+            out_channels (int): The channel size of input feature map
+            hidden_channels (int, optional): The channel size of input feature map. If None, this is equal to out_channels Defaults to None.
+            downsample (bool, optional): If True, downsample the input feature map. Defaults to False.
+            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
+        """
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -129,28 +181,36 @@ class DBlock(nn.Module):
             hidden_channels if hidden_channels is not None else in_channels
         )
         self.downsample = downsample
-        self.learnable_sc = (in_channels != out_channels) or downsample
+        self.learnable_shortcut_conv = (in_channels != out_channels) or downsample
         self.use_sn = use_sn
 
-        self.c1 = SNConv2d(use_sn, self.in_channels, self.hidden_channels, 3, 1, 1)
-        self.c2 = SNConv2d(use_sn, self.hidden_channels, self.out_channels, 3, 1, 1)
-        self.activation = nn.ReLU(True)
+        if self.use_sn:
+            self.conv1 = SNConv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
+            self.conv2 = SNConv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
+        else:
+            self.conv1 = nn.Conv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
+            self.conv2 = nn.Conv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
 
-        nn.init.xavier_uniform_(self.c1.weight.data, math.sqrt(2.0))
-        nn.init.xavier_uniform_(self.c2.weight.data, math.sqrt(2.0))
+        self.activation = nn.LeakyReLU(0.2, inplace=True)
+
+        nn.init.xavier_uniform_(self.conv1.weight.data, math.sqrt(2.0))
+        nn.init.xavier_uniform_(self.conv2.weight.data, math.sqrt(2.0))
 
         # Shortcut layer
-        if self.learnable_sc:
-            self.c_sc = SNConv2d(use_sn, self.in_channels, self.out_channels, 1, 1, 0)
-            nn.init.xavier_uniform_(self.c_sc.weight.data, 1.0)
+        if self.learnable_shortcut_conv:
+            if self.use_sn:
+                self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
+            else:
+                self.shortcut_conv = nn.Conv2d(self.in_channels, self.out_channels, 1, 1, 0)
+            nn.init.xavier_uniform_(self.shortcut_conv.weight.data, 1.0)
 
     def _residual(self, x):
 
         h = x
         h = self.activation(h)
-        h = self.c1(h)
+        h = self.conv1(h)
         h = self.activation(h)
-        h = self.c2(h)
+        h = self.conv2(h)
         if self.downsample:
             h = F.avg_pool2d(h, 2)
 
@@ -158,8 +218,8 @@ class DBlock(nn.Module):
 
     def _shortcut(self, x):
 
-        if self.learnable_sc:
-            x = self.c_sc(x)
+        if self.learnable_shortcut_conv:
+            x = self.shortcut_conv(x)
             if self.downsample:
                 x = F.avg_pool2d(x, 2)
 
