@@ -33,7 +33,7 @@ class ProbLoss(nn.Module):
                 return -torch.mean(minval)
 
 
-def ortho_reg(model, strength=1e-4, blacklist=None):
+def ortho_reg(model, strength=1e-4, blacklist=[]):
     """
     Apply Orthogonal Regularization after calculating gradient using loss backward().
 
@@ -43,10 +43,15 @@ def ortho_reg(model, strength=1e-4, blacklist=None):
         blacklist (list, optional): set to avoid to regulate shared Generator layers. Defaults to None.
     """
 
+    # to avoid iterable error because Python’s default arguments are evaluated once
+    # when the function is defined, not each time the function is called.
+    if blacklist is None:
+        blacklist = []
+
     with torch.no_grad():
         for param in model.parameters():
             # Only apply this to parameters with at least 2 axes, and not in the blacklist
-            if len(param.shape) < 2 or any([param is item for item in blacklist]):
+            if (len(param.shape) < 2) or any([param is item for item in blacklist]):
                 continue
             w = param.view(param.shape[0], -1)
             grad = 2 * torch.mm(
