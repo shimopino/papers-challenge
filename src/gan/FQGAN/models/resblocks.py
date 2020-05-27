@@ -12,7 +12,7 @@ class GBlock(nn.Module):
         hidden_channels=None,
         upsample=False,
         num_classes=0,
-        use_sn=False,
+        spectral_norm=False,
     ):
         """
         Resblock for Generator to deepen the model.
@@ -24,7 +24,7 @@ class GBlock(nn.Module):
             hidden_channels (int, optional): The channel size of hidden feature map. If None, this is equals to out_channels.
             upsample (bool, optional): If True, upsamples the input feature map. Defaults to False.
             num_classes (int, optional): If more than 0, uses conditional batch norm instead. Defaults to 0.
-            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
+            spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
         """
         super(GBlock, self).__init__()
 
@@ -36,14 +36,14 @@ class GBlock(nn.Module):
         self.learnable_shortcut_conv = (in_channels != out_channels) or upsample
         self.upsample = upsample
         self.num_classes = num_classes
-        self.use_sn = use_sn
+        self.spectral_norm = spectral_norm
 
-        if self.use_sn:
+        if self.spectral_norm:
             self.conv1 = SNConv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
             self.conv2 = SNConv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
         else:
             self.conv1 = nn.Conv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
-            self.conv2 = nn.Conv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
+            self.conv2 = nn.Co初めてOSSにissueたてたnv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
 
         if self.num_classes == 0:
             self.bn1 = nn.BatchNorm2d(self.in_channels)
@@ -59,7 +59,7 @@ class GBlock(nn.Module):
 
         # Shortcut layer
         if self.learnable_shortcut_conv:
-            if self.use_sn:
+            if self.spectral_norm:
                 self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
             else:
                 self.shortcut_conv = nn.Conv2d(self.in_channels, self.out_channels, 1, 1, 0)
@@ -104,7 +104,7 @@ class DBlockOptimized(nn.Module):
         self,
         in_channels,
         out_channels,
-        use_sn=True
+        spectral_norm=True
     ):
         """
         Resblock for the First Layer of Discriminator to definitely downsample inputs.
@@ -113,15 +113,15 @@ class DBlockOptimized(nn.Module):
         Args:
             in_channels (int): The channel size of input feature map
             out_channels (int): The channel size of output feature map
-            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
+            spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
         """
         super(DBlockOptimized, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.use_sn = use_sn
+        self.spectral_norm = spectral_norm
 
         # Build Layers
-        if self.use_sn:
+        if self.spectral_norm:
             self.conv1 = SNConv2d(self.in_channels, self.out_channels, 3, 1, 1)
             self.conv2 = SNConv2d(self.out_channels, self.out_channels, 3, 1, 1)
             self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
@@ -162,7 +162,7 @@ class DBlock(nn.Module):
         out_channels,
         hidden_channels=None,
         downsample=False,
-        use_sn=True,
+        spectral_norm=True,
     ):
         """
         Resblock for Discriminator to deepen the layers.
@@ -172,7 +172,7 @@ class DBlock(nn.Module):
             out_channels (int): The channel size of input feature map
             hidden_channels (int, optional): The channel size of input feature map. If None, this is equal to out_channels Defaults to None.
             downsample (bool, optional): If True, downsample the input feature map. Defaults to False.
-            use_sn (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
+            spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to True.
         """
         super().__init__()
         self.in_channels = in_channels
@@ -182,9 +182,9 @@ class DBlock(nn.Module):
         )
         self.downsample = downsample
         self.learnable_shortcut_conv = (in_channels != out_channels) or downsample
-        self.use_sn = use_sn
+        self.spectral_norm = spectral_norm
 
-        if self.use_sn:
+        if self.spectral_norm:
             self.conv1 = SNConv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
             self.conv2 = SNConv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
         else:
@@ -198,7 +198,7 @@ class DBlock(nn.Module):
 
         # Shortcut layer
         if self.learnable_shortcut_conv:
-            if self.use_sn:
+            if self.spectral_norm:
                 self.shortcut_conv = SNConv2d(self.in_channels, self.out_channels, 1, 1, 0)
             else:
                 self.shortcut_conv = nn.Conv2d(self.in_channels, self.out_channels, 1, 1, 0)
