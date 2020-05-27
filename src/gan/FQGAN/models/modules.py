@@ -2,37 +2,26 @@ import torch
 import torch.nn as nn
 
 
-def SNConv2d(use_sn, *args, **kwargs):
-    if use_sn:
-        return torch.nn.utils.spectral_norm(nn.Conv2d(*args, **kwargs))
-    else:
-        return nn.Conv2d(*args, **kwargs)
+def SNConv2d(*args, **kwargs):
+    return torch.nn.utils.spectral_norm(nn.Conv2d(*args, **kwargs))
 
 
-def SNLinear(use_sn, *args, **kwargs):
-    if use_sn:
-        return torch.nn.utils.spectral_norm(nn.Linear(*args, **kwargs))
-    else:
-        return nn.Linear(*args, **kwargs)
+def SNLinear(*args, **kwargs):
+    return torch.nn.utils.spectral_norm(nn.Linear(*args, **kwargs))
 
 
-def SNEmbedding(use_sn, *args, **kwargs):
-    if use_sn:
-        return torch.nn.utils.spectral_norm(nn.Embedding(*args, **kwargs))
-    else:
-        return nn.Embedding(*args, **kwargs)
+def SNEmbedding(*args, **kwargs):
+    return torch.nn.utils.spectral_norm(nn.Embedding(*args, **kwargs))
 
 
-def SNConvTranspose2d(use_sn, *args, **kwargs):
-    if use_sn:
-        return torch.nn.utils.spectral_norm(nn.ConvTranspose2d(*args, **kwargs))
-    else:
-        return nn.ConvTranspose2d(*args, **kwargs)
+def SNConvTranspose2d(*args, **kwargs):
+    return torch.nn.utils.spectral_norm(nn.ConvTranspose2d(*args, **kwargs))
 
 
 class ConditionalBatchNorm2d(nn.Module):
     def __init__(self, num_features, num_classes):
-        super().__init__()
+        super(ConditionalBatchNorm2d, self).__init__()
+
         self.num_features = num_features
         self.bn = nn.BatchNorm2d(num_features, affine=False)
         self.embed = nn.Embedding(num_classes, num_features * 2)
@@ -40,8 +29,11 @@ class ConditionalBatchNorm2d(nn.Module):
         self.embed.weight_data[:, num_features:].zero_()
 
     def forward(self, x, y):
+
         out = self.bn(x)
+        # [B, ] --> [B, C*2] --> [B, C], [B, C]
         gamma, beta = self.embed(y).chunk(2, 1)
+        # γ(N(1, 0.02)) x Feature + β(0.0)
         out = gamma.view(-1, self.num_features, 1, 1) * out + beta.view(
             -1, self.num_features, 1, 1
         )
