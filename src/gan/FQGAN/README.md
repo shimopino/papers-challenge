@@ -11,6 +11,9 @@ $ bash download celeba
 
 ```bash
 $ python main.py
+
+# if you don't want to create __pycache__
+$ python -B main.py
 ```
 
 ### start tensorboard
