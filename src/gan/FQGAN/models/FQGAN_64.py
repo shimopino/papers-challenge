@@ -1,11 +1,10 @@
 import torch
 import torch.nn as nn
-from .modules import SNLinear, SNConv2d
-from .resblocks import GBlock, DBlock, DBlockOptimized
+from .modules import SNConv2d, SNConvTranspose2d
 from .vq import VectorQuantizerEMA, VectorQuantizer
 
 
-class ResNetGenerator(nn.Module):
+class Generator(nn.Module):
     def __init__(
         self,
         nz,
@@ -24,7 +23,7 @@ class ResNetGenerator(nn.Module):
             bottom_width (int, optional): The output image size of the bottom layer. Defaults to 4.
             spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
         """
-        super(ResNetGenerator, self).__init__()
+        super().__init__()
         self.nz = nz
         self.ngf = ngf
         self.nc = nc
@@ -33,41 +32,76 @@ class ResNetGenerator(nn.Module):
 
         # [B, nz] --> [B, (width*width)*ngf] --> [B, ngf, width, width]
         if self.spectral_norm:
-            self.linear1 = SNLinear(self.nz, (self.bottom_width ** 2) * self.ngf)
-        else:
-            self.linear1 = nn.Linear(self.nz, (self.bottom_width ** 2) * self.ngf)
-        # [B, ngf, width, width] --> [B, ngf, width*2, width*2]
-        self.block2 = GBlock(self.ngf >> 0, self.ngf >> 1, upsample=True, spectral_norm=spectral_norm)
-        # [B, ngf, width*2, width*2] --> [B, ngf, width*4, width*4]
-        self.block3 = GBlock(self.ngf >> 1, self.ngf >> 2, upsample=True, spectral_norm=spectral_norm)
-        # [B, ngf, width*4, width*4] --> [B, ngf, width*8, width*8]
-        self.block4 = GBlock(self.ngf >> 2, self.ngf >> 3, upsample=True, spectral_norm=spectral_norm)
-        # [B, ngf, width*8, width*8] --> [B, ngf, width*16, width*16]
-        self.block5 = GBlock(self.ngf >> 3, self.ngf >> 4, upsample=True, spectral_norm=spectral_norm)
-        self.bn6 = nn.BatchNorm2d(self.ngf >> 4)
-        # set last conv for logits
-        if self.spectral_norm:
-            self.conv6 = SNConv2d(self.ngf >> 4, self.nc, kernel_size=3, stride=1, padding=1)
-        else:
-            self.conv6 = nn.Conv2d(self.ngf >> 4, self.nc, kernel_size=3, stride=1, padding=1)
-        self.activation = nn.ReLU(inplace=True)
+            self.layer1 = nn.Sequential(
+                SNConvTranspose2d(self.nz, self.ngf >> 0, 4, 1, 0, bias=False),
+                nn.BatchNorm2d(self.ngf >> 0),
+                nn.ReLU(inplace=False)
+            )
+            self.layer2 = nn.Sequential(
+                SNConvTranspose2d(self.ngf >> 0, self.ngf >> 1, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 1),
+                nn.ReLU(inplace=False)
+            )
+            self.layer3 = nn.Sequential(
+                SNConvTranspose2d(self.ngf >> 1, self.ngf >> 2, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 2),
+                nn.ReLU(inplace=False)
+            )
+            self.layer4 = nn.Sequential(
+                SNConvTranspose2d(self.ngf >> 2, self.ngf >> 3, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 3),
+                nn.ReLU(inplace=False)
+            )
+            self.layer5 = nn.Sequential(
+                SNConvTranspose2d(self.ngf >> 3, self.ngf >> 4, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 4),
+                nn.ReLU(inplace=False)
+            )
+            self.layer6 = nn.Sequential(
+                SNConv2d(self.ngf >> 4, self.nc, 3, 1, 1, bias=False),
+                nn.Tanh()
+            )
 
-        # Initialise the weights
-        nn.init.xavier_uniform_(self.linear1.weight.data, 1.0)
-        nn.init.xavier_uniform_(self.conv6.weight.data, 1.0)
+        else:
+            self.layer1 = nn.Sequential(
+                nn.ConvTranspose2d(self.nz, self.ngf >> 0, 4, 1, 0, bias=False),
+                nn.BatchNorm2d(self.ngf >> 0),
+                nn.ReLU(inplace=False)
+            )
+            self.layer2 = nn.Sequential(
+                nn.ConvTranspose2d(self.ngf >> 0, self.ngf >> 1, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 1),
+                nn.ReLU(inplace=False)
+            )
+            self.layer3 = nn.Sequential(
+                nn.ConvTranspose2d(self.ngf >> 1, self.ngf >> 2, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 2),
+                nn.ReLU(inplace=False)
+            )
+            self.layer4 = nn.Sequential(
+                nn.ConvTranspose2d(self.ngf >> 2, self.ngf >> 3, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 3),
+                nn.ReLU(inplace=False)
+            )
+            self.layer5 = nn.Sequential(
+                nn.ConvTranspose2d(self.ngf >> 3, self.ngf >> 4, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ngf >> 4),
+                nn.ReLU(inplace=False)
+            )
+            self.layer6 = nn.Sequential(
+                nn.Conv2d(self.ngf >> 4, self.nc, 3, 1, 1, bias=False),
+                nn.Tanh()
+            )
 
     def forward(self, x):
 
-        h = self.linear1(x)
-        # [B, ngf, 4,  4]
-        h = h.view(-1, self.ngf, self.bottom_width, self.bottom_width)
-        h = self.block2(h)  # [B, ngf//2,   8,  8]
-        h = self.block3(h)  # [B, ngf//4,  16, 16]
-        h = self.block4(h)  # [B, ngf//8,  32, 32]
-        h = self.block5(h)  # [B, ngf//16, 64, 64]
-        h = self.bn6(h)
-        h = self.activation(h)
-        h = torch.tanh(self.conv6(h))  # [B, 3, 64, 64]
+        h = x.view(-1, self.nz, 1, 1)
+        h = self.layer1(h)  # [B, ngf,      4,  4]
+        h = self.layer2(h)  # [B, ngf//2,   8,  8]
+        h = self.layer3(h)  # [B, ngf//4,  16, 16]
+        h = self.layer4(h)  # [B, ngf//8,  32, 32]
+        h = self.layer5(h)  # [B, ngf//16, 64, 64]
+        h = self.layer6(h)
 
         return h
 
@@ -89,7 +123,7 @@ class ResNetGenerator(nn.Module):
         return fake_images
 
 
-class ResNetDiscriminator(nn.Module):
+class Discriminator(nn.Module):
     def __init__(
         self,
         nc,
@@ -111,10 +145,11 @@ class ResNetDiscriminator(nn.Module):
             quant_layers (list, optional): The Layer that VQ module apply . Defaults to None.
         """
 
-        super(ResNetDiscriminator, self).__init__()
+        super().__init__()
 
         self.nc = nc
         self.ndf = ndf
+        self.spectral_norm = spectral_norm
         self.vq_type = vq_type
         self.dict_size = dict_size
         self.quant_layers = quant_layers
@@ -122,50 +157,81 @@ class ResNetDiscriminator(nn.Module):
         if self.vq_type is not None:
             assert self.vq_type in ['Normal', 'EMA'], "set vq_type within ['Normal', 'EMA']"
 
-        self.block1 = DBlockOptimized(self.nc, self.ndf >> 4, spectral_norm=spectral_norm)
-        self.block2 = DBlock(self.ndf >> 4, self.ndf >> 3, downsample=True, spectral_norm=spectral_norm)
-        self.block3 = DBlock(self.ndf >> 3, self.ndf >> 2, downsample=True, spectral_norm=spectral_norm)
-        self.block4 = DBlock(self.ndf >> 2, self.ndf >> 1, downsample=True, spectral_norm=spectral_norm)
-        self.block5 = DBlock(self.ndf >> 1, self.ndf >> 0, downsample=True, spectral_norm=spectral_norm)
-
         if self.spectral_norm:
-            self.linear6 = SNLinear(self.ndf, 1)
+            self.layer1 = nn.Sequential(
+                SNConv2d(self.nc, self.ndf >> 4, 4, 2, 1, bias=False),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer2 = nn.Sequential(
+                SNConv2d(self.ndf >> 4, self.ndf >> 3, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 3),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer3 = nn.Sequential(
+                SNConv2d(self.ndf >> 3, self.ndf >> 2, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 2),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer4 = nn.Sequential(
+                SNConv2d(self.ndf >> 2, self.ndf >> 1, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 1),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer5 = nn.Sequential(
+                SNConv2d(self.ndf >> 1, self.ndf >> 0, 4, 2, 0, bias=False),
+                nn.BatchNorm2d(self.ndf >> 0),
+            )
+            self.layer6 = nn.Sequential(
+                SNConv2d(self.ndf >> 0, 1, 3, 1, 1, bias=False),
+            )
+
         else:
-            self.linear6 = nn.Linear(self.ndf, 1)
-        self.activation = nn.ReLU(inplace=True)
+            self.layer1 = nn.Sequential(
+                nn.Conv2d(self.nc, self.ndf >> 4, 4, 2, 1, bias=False),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer2 = nn.Sequential(
+                nn.Conv2d(self.ndf >> 4, self.ndf >> 3, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 3),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer3 = nn.Sequential(
+                nn.Conv2d(self.ndf >> 3, self.ndf >> 2, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 2),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer4 = nn.Sequential(
+                nn.Conv2d(self.ndf >> 2, self.ndf >> 1, 4, 2, 1, bias=False),
+                nn.BatchNorm2d(self.ndf >> 1),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer5 = nn.Sequential(
+                nn.Conv2d(self.ndf >> 1, self.ndf >> 0, 4, 2, 0, bias=False),
+                nn.BatchNorm2d(self.ndf >> 0),
+                nn.LeakyReLU(0.2, inplace=False)
+            )
+            self.layer6 = nn.Sequential(
+                nn.Conv2d(self.ndf >> 0, 1, 3, 1, 1, bias=False),
+            )
 
-        if self.vq_type:
-            assert quant_layers is not None, "should set quant_layers like ['3']"
-            assert (min(quant_layers) > 1) and (max(quant_layers) < 6), "should be range [2, 5]"
-            for layer in quant_layers:
-                out_channels = getattr(self, f"block{layer}").out_channels
-                if self.vq_type == "Normal":
-                    setattr(self, f"vq{layer}", VectorQuantizer(out_channels, 2 ** self.dict_size))
-                elif self.vq_type == "EMA":
-                    setattr(self, f"vq{layer}", VectorQuantizerEMA(out_channels, 2 ** self.dict_size))
-
-        # Initialise the weights
-        nn.init.xavier_uniform_(self.linear6.weight.data, 1.0)
+        if self.vq_type == "Normal":
+            self.vq = VectorQuantizer(self.ndf >> 2, 2 ** self.dict_size)
+        elif self.vq_type == "EMA":
+            self.vq = VectorQuantizerEMA(self.ndf >> 2, 2 ** self.dict_size)
 
     def forward(self, x):
 
         h = x
-        h = self.block1(h)
+        h = self.layer1(h)
+        h = self.layer2(h)
+        h = self.layer3(h)
+        if self.vq_type:
+            h, loss, embed_idx = self.vq(h)
+        h = self.layer4(h)
+        h = self.layer5(h)
+        output = self.layer6(h).view(-1)
 
-        quant_loss = 0
-        for layer in range(2, 6):
-            h = getattr(self, f"block{layer}")(h)
-            # apply Feature Quantization
-            if layer in self.quant_layers:
-                h, loss, embed_idx = getattr(self, f"vq{layer}")(h)
-                quant_loss += loss
-
-        h = self.activation(h)
-        # Global average pooling
-        h = torch.sum(h, dim=(2, 3))  # [B, ndf]
-        output = self.linear6(h).squeeze()
-
-        if self.use_vq:
+        if self.vq_type:
             return output, loss, embed_idx
         else:
             return output
@@ -181,13 +247,14 @@ class ResNetDiscriminator(nn.Module):
 
 
 if __name__ == "__main__":
-    netG = ResNetGenerator(100, 1024, 3, 4, True)
-    print(netG(torch.randn(10, 100)))
+    netG = Generator(100, 1024, 3, 4, True)
+    print(netG)
+    print(netG(torch.randn(10, 100)).shape)
 
-    netD = ResNetDiscriminator(3, 1024, True, True, 5)
-    print(netD(torch.randn(10, 3, 64, 64)))
+    netD = Discriminator(3, 1024, True)
+    print(netD)
+    print(netD(torch.randn(10, 3, 64, 64)).shape)
 
-    sample = getattr(netD, "block2")
-    print(sample)
-    print(sample.in_channels)
-    print(sample.out_channels)
+    netD = Discriminator(3, 1024, True, "Normal", dict_size=10)
+    print(netD)
+    print(netD(torch.randn(10, 3, 64, 64))[0].shape)

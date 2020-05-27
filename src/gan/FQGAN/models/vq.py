@@ -49,13 +49,13 @@ class VectorQuantizer(nn.Module):
         # Straight Through Estimator
         quantize = inputs + (quantize - inputs).detach()
         # [B, H, W, D] --> [B, D, H, W]
-        quantize = quantize.permute(0, 3, 1, 2).contiguous()
+        # quantize = quantize.permute(0, 3, 1, 2).contiguous()
 
         # average probability: [N, K] --> [N, ]
         # avg_probs = torch.mean(embed_onehot, dim=0)
         # perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
 
-        return quantize, loss, embed_onehot
+        return quantize.permute(0, 3, 1, 2).contiguous(), loss, embed_onehot
 
     def extra_repr(self):
         return "emb_dim={}, num_emb={}, commitment={}".format(
@@ -144,13 +144,13 @@ class VectorQuantizerEMA(nn.Module):
         # Straight Through Estimator
         quantize = inputs + (quantize - inputs).detach()
         # [B, H, W, D] --> [B, D, H, W]
-        quantize = quantize.permute(0, 3, 1, 2).contiguous()
+        # quantize = quantize.permute(0, 3, 1, 2).contiguous()
 
         # average probability: [N, K] --> [N, ]
         # avg_probs = torch.mean(embed_onehot, dim=0)
         # perplexity = torch.exp(-torch.sum(avg_probs * torch.log(avg_probs + 1e-10)))
 
-        return quantize, loss, embed_idx
+        return quantize.permute(0, 3, 1, 2).contiguous(), loss, embed_idx
 
     def extra_repr(self):
         return "emb_dim={}, num_emb={}, commitment={}, decay={}, eps={}".format(

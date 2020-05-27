@@ -86,11 +86,11 @@ class GBlock(nn.Module):
 
     def _shortcut(self, x):
 
-        if self.learnable_sc:
+        if self.learnable_shortcut_conv:
             if self.upsample:
                 x = self._upsample_conv(x, self.shortcut_conv)
             else:
-                x = self.c_sc(x)
+                x = self.shortcut_conv(x)
 
         return x
 
@@ -139,7 +139,7 @@ class DBlockOptimized(nn.Module):
     def _residual(self, x):
 
         h = x
-        h = self.conc1(h)
+        h = self.conv1(h)
         h = self.activation(h)
         h = self.conv2(h)
         h = F.avg_pool2d(h, 2)

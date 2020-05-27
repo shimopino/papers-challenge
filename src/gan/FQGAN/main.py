@@ -9,7 +9,7 @@ from config import Config
 from datasets import data_utils
 from training.logger import Logger
 from training.utils import set_seed, count_parameters_float32
-from models.FQGAN import ResNetGenerator, ResNetDiscriminator
+from models.FQGAN_64 import Generator, Discriminator
 from models.losses import ortho_reg, ProbLoss
 
 
@@ -42,13 +42,13 @@ def build_dataset(cfg, logger):
 
 
 def build_model(cfg, logger):
-    netG = ResNetGenerator(cfg.nz, cfg.ngf, cfg.nc, cfg.bottom_width, cfg.use_sn).to(
+    netG = Generator(cfg.nz, cfg.ngf, cfg.nc, cfg.bottom_width, cfg.use_sn).to(
         cfg.device
     )
     logger.print_log(f"Generator Memory: {count_parameters_float32(netG):.2f} MB")
 
-    netD = ResNetDiscriminator(
-        cfg.nc, cfg.ndf, cfg.use_sn, cfg.use_vq, cfg.dict_size, cfg.quant_layers
+    netD = Discriminator(
+        cfg.nc, cfg.ndf, cfg.use_sn, cfg.vq_type, cfg.dict_size, cfg.quant_layers
     ).to(cfg.device)
     logger.print_log(f"Discriminator Memory: {count_parameters_float32(netD):.2f} MB")
 
@@ -106,28 +106,39 @@ def main(cfg):
             # Train with all-real batch
             netD.zero_grad()
             # Forward pass real batch through D
-            output_real, quant_loss_real, ppl_real, embed_idx = netD(real_imgs)
+            if cfg.vq_type:
+                output_real, quant_loss_real, embed_idx_real = netD(real_imgs)
+            else:
+                output_real = netD(real_imgs)
             # Calculate loss on all-real batch
             lossD_real = criterion(output_real, "dis_real")
-            if cfg.use_vq:
+            if cfg.vq_type:
                 lossD_real += quant_loss_real
 
             # Train with all-fake batch
             fake = netG.generate_images(bs, cfg.device)
             # Classify all fake batch with D
-            output_fake, quant_loss_fake, ppl_fake, embed_idx = netD(fake.detach())
+            if cfg.vq_type:
+                output_fake, quant_loss_fake, embed_idx_fake = netD(fake.detach())
+            else:
+                output_fake = netD(fake.detach())
             # Calculate D's loss on the all-fake batch
             lossD_fake = criterion(output_fake, "dis_fake")
-            if cfg.use_vq:
+            if cfg.vq_type:
                 lossD_fake += quant_loss_fake
 
             # Add the gradients from the all-real and all-fake batches
             lossD = lossD_real + lossD_fake
             if cfg.amp:
                 with amp.scale_loss(lossD, optimizerD) as scaled_loss:
-                    scaled_loss.backward()
+                    scaled_loss.backward(retain_graph=True)
             else:
-                lossD.backward()
+                lossD.backward(retain_graph=True)
+
+            # apply Orthogonal Regularization
+            if cfg.is_ortho:
+                ortho_reg(netD, cfg.is_ortho)
+
             # Update D
             optimizerD.step()
 
@@ -136,14 +147,14 @@ def main(cfg):
             ###########################
             netG.zero_grad()
             # Since we just updated D, perform another forward pass of all-fake batch through D
-            output, quant_loss_G, _, _ = netD(fake)
+            if cfg.vq_type:
+                output, quant_loss_G, _ = netD(fake)
+            else:
+                output = netD(fake)
             # Calculate G's loss based on this output
             lossG = criterion(output, "gen")
-            # if cfg.use_vq:
-            #     lossG += quant_loss_G
-            # if cfg.is_ortho:
-            #     ortho_loss = ortho_reg(netG, factor=cfg.factor, device=cfg.device)
-            #     lossG += ortho_loss
+            if cfg.vq_type:
+                lossG += quant_loss_G
 
             # Calculate gradients for G
             with torch.autograd.detect_anomaly():
@@ -152,12 +163,18 @@ def main(cfg):
                         scaled_loss.backward()
                 else:
                     lossG.backward()
+
+            # apply Orthogonal Regularization
+            if cfg.is_ortho:
+                ortho_reg(netG, cfg.is_ortho)
+
             # # Update G
             optimizerG.step()
 
             # Output training stats
             if i % cfg.print_iters == 0:
-                D_x, D_Gz = netD.compute_probs(output_real, output_fake)
+                D_x  = netD.compute_probs(output_real)
+                D_Gz = netD.compute_probs(output_fake)
 
                 msg = "[{:3d}/{:3d}][{:5d}/{:5d}] ".format(
                     epoch, cfg.n_epochs, i, len(dataloader)
@@ -165,10 +182,6 @@ def main(cfg):
                 msg += "Loss_D: {:.4f} Loss_G: {:.4f} ".format(
                     lossD.item(), lossG.item()
                 )
-                if cfg.use_vq:
-                    msg += "PPL_real: {:.4f} PPL_fake: {:.4f} ".format(
-                        ppl_real, ppl_fake
-                    )
                 msg += "D(x): {:.4f} D(G(z)): {:.4f}".format(D_x, D_Gz)
 
                 logger.print_log(msg)
@@ -203,9 +216,7 @@ def main(cfg):
                 #     )
 
                 logger.add_scalar("D(x)", D_x, global_step=iters)
-                logger.add_scalar(
-                    "D(G(z)) after optimizing Generator", D_Gz, global_step=iters
-                )
+                logger.add_scalar("D(G(z))", D_Gz, global_step=iters)
 
             # Save Losses for plotting later
             history["g_losses"].append(lossG.item())
@@ -223,9 +234,14 @@ def main(cfg):
         # output to tensorboard
         logger.add_image("img", fake, global_step=epoch)
 
+        # do checkpointing
+        torch.save(netG.state_dict(), "%s/netG_epoch_%d.pth" % (cfg.output, epoch))
+        torch.save(netD.state_dict(), "%s/netD_epoch_%d.pth" % (cfg.output, epoch))
+
     logger.close_writers()
 
 
 if __name__ == "__main__":
     cfg = Config()
+    print(type(cfg.vq_type))
     main(cfg)
