@@ -43,7 +43,7 @@ class GBlock(nn.Module):
             self.conv2 = SNConv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
         else:
             self.conv1 = nn.Conv2d(self.in_channels, self.hidden_channels, 3, 1, 1)
-            self.conv2 = nn.Co初めてOSSにissueたてたnv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
+            self.conv2 = nn.Conv2d(self.hidden_channels, self.out_channels, 3, 1, 1)
 
         if self.num_classes == 0:
             self.bn1 = nn.BatchNorm2d(self.in_channels)
@@ -235,12 +235,15 @@ if __name__ == "__main__":
 
     gblock = GBlock(32, 64, 64, False, 0, True)
     output = gblock(torch.randn(10, 32, 64, 64))
+    output = gblock(torch.randn(10, 32, 64, 64))
     print(output.shape)
 
     doptblock = DBlockOptimized(3, 32, True)
     output = doptblock(torch.randn(10, 3, 64, 64))
+    output = doptblock(torch.randn(10, 3, 64, 64))
     print(output.shape)
 
     dblock = DBlock(32, 64, 64, False, True)
+    output = dblock(torch.randn(10, 32, 64, 64))
     output = dblock(torch.randn(10, 32, 64, 64))
     print(output.shape)
