@@ -7,6 +7,7 @@ class ProbLoss(nn.Module):
         assert loss_type in ["bce", "hinge"]
         super().__init__()
         self.loss_type = loss_type
+        self.batch_size = batch_size
         self.device = device
         self.ones = torch.ones(batch_size, dtype=torch.float, device=device)
         self.zeros = torch.zeros(batch_size, dtype=torch.float, device=device)
@@ -14,26 +15,25 @@ class ProbLoss(nn.Module):
 
     def __call__(self, logits, condition):
         assert condition in ["gen", "dis_real", "dis_fake"]
-        batch_len = len(logits)
 
         if self.loss_type == "bce":
             if condition in ["gen", "dis_real"]:
-                return self.bce(logits, self.ones[:batch_len])
+                return self.bce(logits, self.ones)
             else:
-                return self.bce(logits, self.zeros[:batch_len])
+                return self.bce(logits, self.zeros)
 
         elif self.loss_type == "hinge":
             if condition == "gen":
                 return -torch.mean(logits)
             elif condition == "dis_real":
-                minval = torch.min(logits - 1.0, self.zeros[:batch_len])
+                minval = torch.min(logits - 1.0, self.zeros)
                 return -torch.mean(minval)
             else:
-                minval = torch.min(-logits - 1.0, self.zeros[:batch_len])
+                minval = torch.min(-logits - 1.0, self.zeros)
                 return -torch.mean(minval)
 
 
-def ortho_reg(model, strength=1e-4, blacklist=[]):
+def ortho_reg(model, strength=1e-4, blacklist=None):
     """
     Apply Orthogonal Regularization after calculating gradient using loss backward().
 

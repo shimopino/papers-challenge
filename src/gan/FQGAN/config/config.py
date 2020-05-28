@@ -7,7 +7,7 @@ import torch
 class Config:
     # general settings
     seed: int = 42
-    ngpu: int = 1
+    ngpu: int = 0
     amp: bool = False
     opt_level: str = "O1"
 

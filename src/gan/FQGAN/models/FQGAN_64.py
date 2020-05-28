@@ -23,7 +23,7 @@ class Generator(nn.Module):
         bottom_width=4,
         spectral_norm=False
     ):
-        super().__init__()
+        super(Generator, self).__init__()
         self.nz = nz
         self.ngf = ngf
         self.nc = nc
@@ -95,7 +95,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
 
-        h = x.view(-1, self.nz, 1, 1)
+        h = x.view(-1, self.nz, 1, 1).contiguous()
         h = self.layer1(h)  # [B, ngf,      4,  4]
         h = self.layer2(h)  # [B, ngf//2,   8,  8]
         h = self.layer3(h)  # [B, ngf//4,  16, 16]
@@ -144,7 +144,7 @@ class Discriminator(nn.Module):
         dict_size=5,
         quant_layers=None,
     ):
-        super().__init__()
+        super(Discriminator, self).__init__()
 
         self.nc = nc
         self.ndf = ndf
@@ -228,7 +228,7 @@ class Discriminator(nn.Module):
             h3, loss, embed_idx = self.vq(h3)
         h4 = self.layer4(h3)
         h5 = self.layer5(h4)
-        output = self.layer6(h5).view(-1)
+        output = self.layer6(h5).view(-1).contiguous()
 
         if self.vq_type:
             return output, loss, embed_idx

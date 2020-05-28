@@ -14,6 +14,7 @@ from models.losses import ortho_reg, ProbLoss
 
 
 def setup(cfg, logger):
+
     if cfg is not None:
         logger.print_log(f"configuration: {cfg}")
 
@@ -26,12 +27,18 @@ def setup(cfg, logger):
 
 def build_dataset(cfg, logger):
     dataset = data_utils.get_celeba_dataset(
-        root=cfg.datapath, image_size=cfg.image_size
+        root=cfg.datapath,
+        image_size=cfg.image_size
     )
+
     logger.print_log(len(dataset))
 
     dataloader = DataLoader(
-        dataset, batch_size=cfg.batch_size, num_workers=cfg.num_workers, shuffle=True
+        dataset,
+        batch_size=cfg.batch_size,
+        num_workers=cfg.num_workers,
+        shuffle=True,
+        drop_last=True
     )
 
     real_batch = next(iter(dataloader))
@@ -42,14 +49,26 @@ def build_dataset(cfg, logger):
 
 
 def build_model(cfg, logger):
-    netG = Generator(cfg.nz, cfg.ngf, cfg.nc, cfg.bottom_width, cfg.use_sn).to(
-        cfg.device
-    )
+
+    netG = Generator(
+        cfg.nz,
+        cfg.ngf,
+        cfg.nc,
+        cfg.bottom_width,
+        cfg.use_sn
+    ).to(cfg.device)
+
     logger.print_log(f"Generator Memory: {count_parameters_float32(netG):.2f} MB")
 
     netD = Discriminator(
-        cfg.nc, cfg.ndf, cfg.use_sn, cfg.vq_type, cfg.dict_size, cfg.quant_layers
+        cfg.nc,
+        cfg.ndf,
+        cfg.use_sn,
+        cfg.vq_type,
+        cfg.dict_size,
+        cfg.quant_layers
     ).to(cfg.device)
+
     logger.print_log(f"Discriminator Memory: {count_parameters_float32(netD):.2f} MB")
 
     if (cfg.is_cuda) and (cfg.ngpu > 1):
