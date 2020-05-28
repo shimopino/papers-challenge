@@ -5,6 +5,16 @@ from .vq import VectorQuantizerEMA, VectorQuantizer
 
 
 class Generator(nn.Module):
+    """
+    Generator which has Resblock for resolution 64x64
+
+    Args:
+        nz (int): The channel size of input latent code.
+        ngf (int): The base channel size of each GBlock.
+        nc (int): The channel size of output image.
+        bottom_width (int, optional): The output image size of the bottom layer. Defaults to 4.
+        spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
+    """
     def __init__(
         self,
         nz,
@@ -13,16 +23,6 @@ class Generator(nn.Module):
         bottom_width=4,
         spectral_norm=False
     ):
-        """
-        Generator which has Resblock for resolution 64x64
-
-        Args:
-            nz (int): The channel size of input latent code.
-            ngf (int): The base channel size of each GBlock.
-            nc (int): The channel size of output image.
-            bottom_width (int, optional): The output image size of the bottom layer. Defaults to 4.
-            spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
-        """
         super().__init__()
         self.nz = nz
         self.ngf = ngf
@@ -124,6 +124,17 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
+    """
+    Discriminator which has Resblock for resolution 64x64 with  Feature Quantization module.
+
+    Args:
+        nc (int): The channel size of input image
+        ndf ([type]): The base channel size of each DBlock
+        spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
+        vq_type (str, optional): The VQ module type ["Normal", "EMA"]. Defaults to None.
+        dict_size (int, optional): The number of dictionary vector. Defaults to 5.
+        quant_layers (list, optional): The Layer that VQ module apply . Defaults to None.
+    """
     def __init__(
         self,
         nc,
@@ -133,18 +144,6 @@ class Discriminator(nn.Module):
         dict_size=5,
         quant_layers=None,
     ):
-        """
-        Discriminator which has Resblock for resolution 64x64 with  Feature Quantization module.
-
-        Args:
-            nc (int): The channel size of input image
-            ndf ([type]): The base channel size of each DBlock
-            spectral_norm (bool, optional): If True, uses spectral norm for convolutional layers. Defaults to False.
-            vq_type (str, optional): The VQ module type ["Normal", "EMA"]. Defaults to None.
-            dict_size (int, optional): The number of dictionary vector. Defaults to 5.
-            quant_layers (list, optional): The Layer that VQ module apply . Defaults to None.
-        """
-
         super().__init__()
 
         self.nc = nc
@@ -222,14 +221,14 @@ class Discriminator(nn.Module):
     def forward(self, x):
 
         h = x
-        h = self.layer1(h)
-        h = self.layer2(h)
-        h = self.layer3(h)
+        h1 = self.layer1(h)
+        h2 = self.layer2(h1)
+        h3 = self.layer3(h2)
         if self.vq_type:
-            h, loss, embed_idx = self.vq(h)
-        h = self.layer4(h)
-        h = self.layer5(h)
-        output = self.layer6(h).view(-1)
+            h3, loss, embed_idx = self.vq(h3)
+        h4 = self.layer4(h3)
+        h5 = self.layer5(h4)
+        output = self.layer6(h5).view(-1)
 
         if self.vq_type:
             return output, loss, embed_idx
