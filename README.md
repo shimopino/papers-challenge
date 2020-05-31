@@ -119,6 +119,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/97)
 - [[arXiv:2005.12444] SegAttnGAN: Text to Image Generation with Segmentation Attention](https://arxiv.org/abs/2005.12444)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/127)
+- [[arXiv:2005.13192] TIME: Text and Image Mutual-Translation Adversarial Networks](https://arxiv.org/abs/2005.13192)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/128)
 
 <a id="markdown-speech2image" name="speech2image"></a>
 ### Speech-to-Image Translation
