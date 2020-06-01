@@ -1,3 +1,6 @@
+# This file don't have to execute if you use 
+# torch_mimicry dataset loading
+
 # get args
 DATASET=$1
 TARGET_DIR="../data/celeba"
