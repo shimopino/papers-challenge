@@ -2,7 +2,34 @@ from config import Config
 import torch
 import torch.optim as optim
 import torch_mimicry as mmc
-from models.fqgan import FQGANGenerator, FQGANDiscriminator
+from apex import amp
+from models.fqgan_32 import FQGANGenerator, FQGANDiscriminator
+
+
+def build_models(cfg, device):
+    # Define models and optimizers
+    netG = FQGANGenerator(nz=cfg.nz,
+                          ngf=cfg.ngf,
+                          loss_type=cfg.loss_type,
+                          is_amp=cfg.is_amp).to(device)
+    netD = FQGANDiscriminator(ndf=cfg.ndf,
+                              loss_type=cfg.loss_type,
+                              vq_type=cfg.vq_type,
+                              dict_size=cfg.dict_size,
+                              quant_layers=cfg.quant_layers,
+                              is_amp=cfg.is_amp).to(device)
+    optD = optim.Adam(netD.parameters(), cfg.lrD, betas=cfg.betas)
+    optG = optim.Adam(netG.parameters(), cfg.lrG, betas=cfg.betas)
+
+    if cfg.is_amp:
+        [netG, netD], [optG, optD] = amp.initialize([netG, netD],
+                                                    [optG, optD],
+                                                    opt_level=cfg.opt_level)
+
+    print(netG)
+    print(netD)
+
+    return netG, netD, optG, optD
 
 
 def main(cfg):
@@ -13,13 +40,7 @@ def main(cfg):
         dataset, batch_size=cfg.batch_size, shuffle=True, num_workers=cfg.num_workers)
 
     # Define models and optimizers
-    netG = FQGANGenerator(loss_type=cfg.loss_type).to(device)
-    netD = FQGANDiscriminator(loss_type=cfg.loss_type,
-                              vq_type=cfg.vq_type,
-                              dict_size=cfg.dict_size,
-                              quant_layers=cfg.quant_layers).to(device)
-    optD = optim.Adam(netD.parameters(), cfg.lrD, betas=cfg.betas)
-    optG = optim.Adam(netG.parameters(), cfg.lrG, betas=cfg.betas)
+    netG, netD, optG, optD = build_models(cfg, device)
 
     #########################
     #        Training

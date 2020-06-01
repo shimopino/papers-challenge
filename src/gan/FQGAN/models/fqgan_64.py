@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from apex import amp
 from .vq import VectorQuantizer, VectorQuantizerEMA
 from torch_mimicry.nets import gan
 from torch_mimicry.modules import SNLinear
@@ -12,6 +13,7 @@ class FQGANGenerator(gan.BaseGenerator):
                  ngf=256,
                  bottom_width=4,
                  loss_type="gan",
+                 is_amp=False,
                  **kwargs):
         super().__init__(nz=nz,
                          ngf=ngf,
@@ -19,15 +21,17 @@ class FQGANGenerator(gan.BaseGenerator):
                          loss_type=loss_type,
                          **kwargs)
 
+        self.is_amp = is_amp
+
         # [B, nz, 4, 4] --> [B, 3, 64, 64]
         self.linear1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
-        self.block2 = GBlock(self.ngf, self.ngf, upsample=True)
-        self.block3 = GBlock(self.ngf, self.ngf, upsample=True)
-        self.block4 = GBlock(self.ngf, self.ngf, upsample=True)
-        self.block5 = GBlock(self.ngf, self.ngf, upsample=True)
-        self.bn6 = nn.BatchNorm2d(self.ngf)
+        self.block2 = GBlock(self.ngf * 1, self.ngf * 2, upsample=True)
+        self.block3 = GBlock(self.ngf * 2, self.ngf * 4, upsample=True)
+        self.block4 = GBlock(self.ngf * 4, self.ngf * 8, upsample=True)
+        self.block5 = GBlock(self.ngf * 8, self.ngf * 16, upsample=True)
+        self.bn6 = nn.BatchNorm2d(self.ngf * 16)
         self.activation = nn.ReLU(inplace=True)
-        self.conv6 = nn.Conv2d(self.ngf, 3, 3, 1, padding=1)
+        self.conv6 = nn.Conv2d(self.ngf * 16, 3, 3, 1, padding=1)
 
         # initialize the weights
         nn.init.xavier_uniform_(self.linear1.weight.data, 1.0)
@@ -70,12 +74,19 @@ class FQGANGenerator(gan.BaseGenerator):
 
         # Backprop and update gradients
         errG_total = errG + quant_loss
-        errG_total.backward()
+        # backward using apex.amp
+        if self.is_amp:
+            with amp.scale_loss(errG_total, optG) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            errG_total.backward()
+
         optG.step()
 
         # Log statistics
         log_data.add_metric('errG', errG, group='loss')
-        log_data.add_metric('errG_quant', quant_loss, group='loss_SS')
+        if quant_loss != 0:
+            log_data.add_metric('errG_quant', quant_loss, group='loss_quant')
 
         return log_data
 
@@ -87,6 +98,7 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
                  vq_type=None,
                  dict_size=10,
                  quant_layers=None,
+                 is_amp=False,
                  **kwargs):
         super().__init__(ndf=ndf,
                          loss_type=loss_type,
@@ -95,6 +107,7 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
         self.vq_type = vq_type
         self.dict_size = dict_size
         self.quant_layers = quant_layers
+        self.is_amp = is_amp
 
         if not isinstance(self.quant_layers, list):
             self.quant_layers = [self.quant_layers]
@@ -103,12 +116,12 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
             assert self.vq_type in ['Normal', 'EMA'], "set vq_type within ['Normal', 'EMA']"
 
         # [B, 3, 64, 64] --> [B, ]
-        self.block1 = DBlockOptimized(3, self.ndf)
-        self.block2 = DBlock(self.ndf, self.ndf, downsample=True)
-        self.block3 = DBlock(self.ndf, self.ndf, downsample=True)
-        self.block4 = DBlock(self.ndf, self.ndf, downsample=True)
-        self.block5 = DBlock(self.ndf, self.ndf, downsample=True)
-        self.linear6 = SNLinear(self.ndf, 1)
+        self.block1 = DBlockOptimized(3, self.ndf * 16)
+        self.block2 = DBlock(self.ndf * 16, self.ndf * 8, downsample=True)
+        self.block3 = DBlock(self.ndf * 8, self.ndf * 4, downsample=True)
+        self.block4 = DBlock(self.ndf * 4, self.ndf * 2, downsample=True)
+        self.block5 = DBlock(self.ndf * 2, self.ndf * 1, downsample=True)
+        self.linear6 = SNLinear(self.ndf * 1, 1)
         self.activation = nn.ReLU(inplace=True)
 
         if self.vq_type:
@@ -179,7 +192,12 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
 
         # backprop and update gradients
         errD_total = errD + quant_loss_real + quant_loss_fake
-        errD_total.backward()
+        if self.is_amp:
+            with amp.scale_loss(errD_total, optD) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            errD_total.backward()
+
         optD.step()
 
         # Compute probabilities
@@ -188,8 +206,9 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
 
         # Log statistics for D once out of loop
         log_data.add_metric('errD', errD, group='loss')
-        log_data.add_metric('errD_quant_real', quant_loss_real, group='loss')
-        log_data.add_metric('errD_quant_fake', quant_loss_fake, group='loss')
+        if self.vq_type:
+            log_data.add_metric('errD_quant_real', quant_loss_real, group='loss_quant')
+            log_data.add_metric('errD_quant_fake', quant_loss_fake, group='loss_quant')
         log_data.add_metric('D(x)', D_x, group='prob')
         log_data.add_metric('D(G(z))', D_Gz, group='prob')
 

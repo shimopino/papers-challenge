@@ -10,8 +10,11 @@ class Config:
     num_workers: int = 4
 
     # model
+    nz: int = 100
+    ngf: int = 64
+    ndf: int = 64
     loss_type: str = "gan"  # "hinge", "ns", "gan", "wasserstein"
-    vq_type: str = "Normal"
+    vq_type: str = "Normal"  # "Normal"
     dict_size: int = 10
     quant_layers: List = field(default_factory=lambda: [3])
 
@@ -25,6 +28,8 @@ class Config:
     batch_size: int = 64
     n_dis: int = 4
     num_steps: int = 100000
+    is_amp: bool = True
+    opt_level: str = "O1"
 
     # evaluation
     metric: str = 'fid'
@@ -33,7 +38,7 @@ class Config:
     evaluate_step: int = 100000
 
     # logging
-    log_dir: str = "./logs/fqgan"
+    log_dir: str = "./logs/fqgan_32_64d_64d"
 
     @property
     def betas(self):
