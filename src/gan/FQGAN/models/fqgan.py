@@ -130,6 +130,7 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
 
         # compute quant layer
         quant_loss = 0
+        embed_idx = None
         for layer in range(2, 6):
             h = getattr(self, f"block{layer}")(h)
             # apply Feature Quantization
