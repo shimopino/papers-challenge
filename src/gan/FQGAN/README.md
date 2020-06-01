@@ -13,6 +13,9 @@ $ python -B main.py
 
 ```bash
 $ tensorboard --logdir logs --host 0.0.0.0
+
+# when "tensorboard: command not found" error occured, use command below.
+$ python /home/devpapers/.local/lib/python3.7/site-packages/tensorboard/main.py --logdir logs --host=0.0.0.0
 ```
 
 #### Citations
