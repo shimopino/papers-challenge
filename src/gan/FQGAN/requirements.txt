@@ -1,7 +1,5 @@
 flake8
 black
-torchsummary
 jupyter
 hydra-core
-scipy
-tensorflow==1.15.2
+torch-mimicry
