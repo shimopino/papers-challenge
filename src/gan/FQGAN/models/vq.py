@@ -4,6 +4,15 @@ import torch.nn.functional as F
 
 
 class VectorQuantizer(nn.Module):
+    """
+    Feature Quantization Modules toward the Output Feature Maps of Discriminator.
+    This Modules follow the Equation (7) in the original paper.
+
+    Args:
+        emb_dim (int): the number of dimensions of Embedding Vector
+        num_emb (int): the power of the dictionary size
+        commitment (float, optional): the strength of commitment loss. Defaults to 0.25.
+    """
     def __init__(self, emb_dim, num_emb, commitment=0.25):
         super(VectorQuantizer, self).__init__()
 
@@ -64,7 +73,18 @@ class VectorQuantizer(nn.Module):
 
 
 class VectorQuantizerEMA(nn.Module):
-    def __init__(self, emb_dim, num_emb, commitment=0.25, decay=0.8, eps=1e-5):
+    """
+    Feature Quantization Modules using Exponential Moving Average toward the Output Feature Maps of Discriminator.
+    This Modules follow the Equation (8) in the original paper.
+
+    Args:
+        emb_dim (int): the number of dimensions of Embedding Vector
+        num_emb (int): the power of the dictionary size
+        commitment (float, optional): the strength of commitment loss. Defaults to 0.25.
+        decay (float, optional): the moment coefficient. Defaults to 0.9.
+        eps (float, optional): the sufficient small value to avoid dividing by zero. Defaults to 1e-5.
+    """
+    def __init__(self, emb_dim, num_emb, commitment=0.25, decay=0.9, eps=1e-5):
         super(VectorQuantizerEMA, self).__init__()
 
         self.emb_dim = emb_dim
