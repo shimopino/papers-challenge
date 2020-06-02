@@ -72,6 +72,26 @@ def main(cfg):
         evaluate_step=cfg.evaluate_step,
         device=device)
 
+    # Evaluate kid
+    mmc.metrics.evaluate(
+        metric='kid',
+        log_dir=cfg.log_dir,
+        netG=netG,
+        dataset_name=cfg.dataset_name,
+        num_subsets=cfg.num_subsets,
+        subset_size=cfg.subset_size,
+        evaluate_step=cfg.evaluate_step,
+        device=device)
+
+    # Evaluate inception score
+    mmc.metrics.evaluate(
+        metric='inception_score',
+        log_dir=cfg.log_dir,
+        netG=netG,
+        num_samples=cfg.num_samples,
+        evaluate_step=cfg.evaluate_step,
+        device=device)
+
 
 if __name__ == "__main__":
     cfg = Config()
