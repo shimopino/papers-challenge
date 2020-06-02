@@ -12,7 +12,7 @@ class FQGANGenerator(gan.BaseGenerator):
                  nz=128,
                  ngf=256,
                  bottom_width=4,
-                 loss_type="gan",
+                 loss_type="hinge",
                  is_amp=False,
                  **kwargs):
         super().__init__(nz=nz,
@@ -23,28 +23,28 @@ class FQGANGenerator(gan.BaseGenerator):
 
         self.is_amp = is_amp
 
-        # [B, nz, 4, 4] --> [B, 3, 64, 64]
-        self.linear1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
-        self.block2 = GBlock(self.ngf * 1, self.ngf * 2, upsample=True)
-        self.block3 = GBlock(self.ngf * 2, self.ngf * 4, upsample=True)
-        self.block4 = GBlock(self.ngf * 4, self.ngf * 8, upsample=True)
-        self.bn5 = nn.BatchNorm2d(self.ngf * 8)
-        self.activation = nn.ReLU(inplace=True)
-        self.conv5 = nn.Conv2d(self.ngf * 8, 3, 3, 1, padding=1)
+        self.l1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
+        self.block2 = GBlock(self.ngf, self.ngf, upsample=True)
+        self.block3 = GBlock(self.ngf, self.ngf, upsample=True)
+        self.block4 = GBlock(self.ngf, self.ngf, upsample=True)
+        self.b5 = nn.BatchNorm2d(self.ngf)
+        self.c5 = nn.Conv2d(self.ngf, 3, 3, 1, padding=1)
+        self.activation = nn.ReLU(True)
 
-        # initialize the weights
-        nn.init.xavier_uniform_(self.linear1.weight.data, 1.0)
-        nn.init.xavier_uniform_(self.conv5.weight.data, 1.0)
+        # Initialise the weights
+        nn.init.xavier_uniform_(self.l1.weight.data, 1.0)
+        nn.init.xavier_uniform_(self.c5.weight.data, 1.0)
 
     def forward(self, x):
-        h = self.linear1(x)
+
+        h = self.l1(x)
         h = h.view(x.shape[0], -1, self.bottom_width, self.bottom_width)
         h = self.block2(h)
         h = self.block3(h)
         h = self.block4(h)
-        h = self.bn5(h)
+        h = self.b5(h)
         h = self.activation(h)
-        h = self.conv5(h)
+        h = self.c5(h)
 
         return torch.tanh(h)
 
@@ -92,7 +92,7 @@ class FQGANGenerator(gan.BaseGenerator):
 class FQGANDiscriminator(gan.BaseDiscriminator):
     def __init__(self,
                  ndf=128,
-                 loss_type="gan",
+                 loss_type="hinge",
                  vq_type=None,
                  dict_size=10,
                  quant_layers=None,
@@ -113,13 +113,16 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
         if self.vq_type is not None:
             assert self.vq_type in ['Normal', 'EMA'], "set vq_type within ['Normal', 'EMA']"
 
-        # [B, 3, 64, 64] --> [B, ]
-        self.block1 = DBlockOptimized(3, self.ndf * 8)
-        self.block2 = DBlock(self.ndf * 8, self.ndf * 4, downsample=True)
-        self.block3 = DBlock(self.ndf * 4, self.ndf * 2, downsample=True)
-        self.block4 = DBlock(self.ndf * 2, self.ndf * 1, downsample=True)
-        self.linear5 = SNLinear(self.ndf * 1, 1)
-        self.activation = nn.ReLU(inplace=True)
+        # Build layers
+        self.block1 = DBlockOptimized(3, self.ndf)
+        self.block2 = DBlock(self.ndf, self.ndf, downsample=True)
+        self.block3 = DBlock(self.ndf, self.ndf, downsample=False)
+        self.block4 = DBlock(self.ndf, self.ndf, downsample=False)
+        self.l5 = SNLinear(self.ndf, 1)
+        self.activation = nn.ReLU(True)
+
+        # Initialise the weights
+        nn.init.xavier_uniform_(self.l5.weight.data, 1.0)
 
         if self.vq_type:
             assert self.quant_layers is not None, "should set quant_layers like ['3']"
@@ -131,10 +134,8 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
                 elif self.vq_type == "EMA":
                     setattr(self, f"vq{layer}", VectorQuantizerEMA(out_channels, 2 ** self.dict_size))
 
-        # initialize the weights
-        nn.init.xavier_uniform_(self.linear5.weight.data, 1.0)
-
     def forward(self, x):
+
         h = x
         h = self.block1(h)
 
@@ -148,15 +149,9 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
                 h, loss, embed_idx = getattr(self, f"vq{layer}")(h)
                 quant_loss += loss
 
-        # h = self.block2(h)
-        # h = self.block3(h)
-        # h = self.block4(h)
-        # h = self.block5(h)
-        h = self.activation(h)
-
         # Global sum pooling
         h = torch.sum(h, dim=(2, 3))
-        output = self.linear5(h)
+        output = self.l5(h)
 
         return output, quant_loss, embed_idx
 
