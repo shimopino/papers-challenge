@@ -12,9 +12,9 @@ class Config:
     nz: int = 128
     ngf: int = 256
     ndf: int = 128
+    loss_type: str = "hinge"  # "hinge", "ns", "gan", "wasserstein"
 
     # model FQGAN
-    loss_type: str = "hinge"  # "hinge", "ns", "gan", "wasserstein"
     vq_type: str = None  # "Normal"
     dict_size: int = 1
     quant_layers: List = field(default_factory=lambda: [3])
