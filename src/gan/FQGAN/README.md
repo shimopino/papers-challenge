@@ -10,6 +10,23 @@
 
 When you start this project, please select VSCode Command `Open Folder in Container`.
 
+## Configuration
+
+When you test Feature Quantization, you change some properties in `./config/config.py`.
+
+```python
+# vq_type: [None, "Normal", "EMA"]
+vq_type: str = None
+
+# dictionary size: [1, ..., 10] 
+# in the paper, they use 10
+# if you select 1, it means binary quantization.
+dict_size: int = 1
+
+# [2, 3, 4] layer where you want to apply Feature Quantization
+quant_layers: List = field(default_factory=lambda: [3])
+```
+
 ## start training
 
 ```bash
