@@ -49,7 +49,11 @@ $ python /home/devpapers/.local/lib/python3.7/site-packages/tensorboard/main.py 
 
 CIFAR10 (32x32)
 
-
+|model|FQ Type|Dictionary Size|Layers|FID|IS|KID|
+|---|---|---|---|---|---|---|
+|SNGAN|-|-|-|16.35|7.89|0.0123|
+|FQGAN|-|-|-|-|-|-|
+|FQGAN|-|-|-|-|-|-|
 
 
 ### Citations
