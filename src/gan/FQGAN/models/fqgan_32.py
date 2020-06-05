@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from apex import amp
-from .vq import VectorQuantizer, VectorQuantizerEMA
+from .fq import FeatureQuantizer, FeatureQuantizerEMA
 from torch_mimicry.nets import gan
 from torch_mimicry.modules import SNLinear
 from torch_mimicry.modules import GBlock, DBlock, DBlockOptimized
@@ -13,6 +13,7 @@ class FQGANGenerator(gan.BaseGenerator):
                  ngf=256,
                  bottom_width=4,
                  loss_type="hinge",
+                 fq_strength=10.0,
                  is_amp=False,
                  **kwargs):
         super().__init__(nz=nz,
@@ -21,6 +22,7 @@ class FQGANGenerator(gan.BaseGenerator):
                          loss_type=loss_type,
                          **kwargs)
 
+        self.fq_strength = fq_strength
         self.is_amp = is_amp
 
         self.l1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
@@ -71,7 +73,7 @@ class FQGANGenerator(gan.BaseGenerator):
         errG = self.compute_gan_loss(output)
 
         # Backprop and update gradients
-        errG_total = errG + quant_loss
+        errG_total = errG + self.fq_strength * quant_loss
         # backward using apex.amp
         if self.is_amp:
             with amp.scale_loss(errG_total, optG) as scaled_loss:
@@ -93,25 +95,27 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
     def __init__(self,
                  ndf=128,
                  loss_type="hinge",
-                 vq_type=None,
+                 fq_type=None,
                  dict_size=10,
                  quant_layers=None,
+                 fq_strength=10.0,
                  is_amp=False,
                  **kwargs):
         super().__init__(ndf=ndf,
                          loss_type=loss_type,
                          **kwargs)
 
-        self.vq_type = vq_type
+        self.fq_type = fq_type
         self.dict_size = dict_size
         self.quant_layers = quant_layers
+        self.fq_strength = fq_strength
         self.is_amp = is_amp
 
-        if not isinstance(self.quant_layers, list):
+        if isinstance(self.quant_layers, int):
             self.quant_layers = [self.quant_layers]
 
-        if self.vq_type is not None:
-            assert self.vq_type in ['Normal', 'EMA'], "set vq_type within ['Normal', 'EMA']"
+        if self.fq_type is not None:
+            assert self.fq_type in ['Normal', 'EMA'], "set fq_type within ['Normal', 'EMA']"
 
         # Build layers
         self.block1 = DBlockOptimized(3, self.ndf)
@@ -124,15 +128,15 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
         # Initialise the weights
         nn.init.xavier_uniform_(self.l5.weight.data, 1.0)
 
-        if self.vq_type:
+        if self.fq_type:
             assert self.quant_layers is not None, "should set quant_layers like ['3']"
             assert (min(self.quant_layers) > 1) and (max(self.quant_layers) < 5), "should be range [2, 4]"
             for layer in self.quant_layers:
                 out_channels = getattr(self, f"block{layer}").out_channels
-                if self.vq_type == "Normal":
-                    setattr(self, f"vq{layer}", VectorQuantizer(out_channels, 2 ** self.dict_size))
-                elif self.vq_type == "EMA":
-                    setattr(self, f"vq{layer}", VectorQuantizerEMA(out_channels, 2 ** self.dict_size))
+                if self.fq_type == "Normal":
+                    setattr(self, f"fq{layer}", FeatureQuantizer(out_channels, 2 ** self.dict_size))
+                elif self.fq_type == "EMA":
+                    setattr(self, f"fq{layer}", FeatureQuantizerEMA(out_channels, 2 ** self.dict_size))
 
     def forward(self, x):
 
@@ -145,8 +149,8 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
         for layer in range(2, 5):
             h = getattr(self, f"block{layer}")(h)
             # apply Feature Quantization
-            if (self.vq_type) and (layer in self.quant_layers):
-                h, loss, embed_idx = getattr(self, f"vq{layer}")(h)
+            if (self.fq_type) and (layer in self.quant_layers):
+                h, loss, embed_idx = getattr(self, f"fq{layer}")(h)
                 quant_loss += loss
 
         # Global sum pooling
@@ -183,7 +187,7 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
                                      output_fake=output_fake)
 
         # backprop and update gradients
-        errD_total = errD + quant_loss_real + quant_loss_fake
+        errD_total = errD + self.fq_strength * (quant_loss_real + quant_loss_fake)
         if self.is_amp:
             with amp.scale_loss(errD_total, optD) as scaled_loss:
                 scaled_loss.backward()
@@ -198,7 +202,7 @@ class FQGANDiscriminator(gan.BaseDiscriminator):
 
         # Log statistics for D once out of loop
         log_data.add_metric('errD', errD, group='loss')
-        if self.vq_type:
+        if self.fq_type:
             log_data.add_metric('errD_quant_real', quant_loss_real, group='loss_quant')
             log_data.add_metric('errD_quant_fake', quant_loss_fake, group='loss_quant')
         log_data.add_metric('D(x)', D_x, group='prob')

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class VectorQuantizer(nn.Module):
+class FeatureQuantizer(nn.Module):
     """
     Feature Quantization Modules toward the Output Feature Maps of Discriminator.
     This Modules follow the Equation (7) in the original paper.
@@ -14,7 +14,7 @@ class VectorQuantizer(nn.Module):
         commitment (float, optional): the strength of commitment loss. Defaults to 0.25.
     """
     def __init__(self, emb_dim, num_emb, commitment=0.25):
-        super(VectorQuantizer, self).__init__()
+        super(FeatureQuantizer, self).__init__()
 
         self.emb_dim = emb_dim
         self.num_emb = num_emb
@@ -72,7 +72,7 @@ class VectorQuantizer(nn.Module):
         )
 
 
-class VectorQuantizerEMA(nn.Module):
+class FeatureQuantizerEMA(nn.Module):
     """
     Feature Quantization Modules using Exponential Moving Average toward the Output Feature Maps of Discriminator.
     This Modules follow the Equation (8) in the original paper.
@@ -85,7 +85,7 @@ class VectorQuantizerEMA(nn.Module):
         eps (float, optional): the sufficient small value to avoid dividing by zero. Defaults to 1e-5.
     """
     def __init__(self, emb_dim, num_emb, commitment=0.25, decay=0.9, eps=1e-5):
-        super(VectorQuantizerEMA, self).__init__()
+        super(FeatureQuantizerEMA, self).__init__()
 
         self.emb_dim = emb_dim
         self.num_emb = num_emb
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     num_emb = 2 ** 10
 
     # check forward propagation of VectorQuantizer
-    vq = VectorQuantizer(emb_dim, num_emb)
+    vq = FeatureQuantizer(emb_dim, num_emb)
     print(vq)
     inputs = torch.randn(100, emb_dim, 64, 64)
 
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     print(h.shape)
 
     # check forward propagation of VectorQuantizerEMA
-    vqema = VectorQuantizerEMA(emb_dim, num_emb)
+    vqema = FeatureQuantizerEMA(emb_dim, num_emb)
     print(vqema)
     inputs = torch.randn(100, emb_dim, 64, 64)
 
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     print(h.shape)
 
     # check inference forward propagation of VectorQuantizerEMA
-    vqema = VectorQuantizerEMA(emb_dim, num_emb)
+    vqema = FeatureQuantizerEMA(emb_dim, num_emb)
     inputs = torch.randn(100, emb_dim, 64, 64)
 
     vqema.eval()
