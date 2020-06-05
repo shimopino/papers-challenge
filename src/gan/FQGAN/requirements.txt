@@ -2,4 +2,5 @@ flake8
 black
 jupyter
 hydra-core
+mlflow
 torch-mimicry

@@ -14,7 +14,8 @@
     "--shm-size=2gb"
   ],
   "appPort": [
-    "6006:6006"
+    "6006:6006",
+    "7006:7006"
   ],
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
