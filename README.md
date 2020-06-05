@@ -161,6 +161,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/20)
 - [[arXiv:2002.04724] Improved Consistency Regularization for GAN](https://arxiv.org/abs/2002.04724)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/11)
+- [[arXiv:2006.02595] Image Augmentations for GAN Training](https://arxiv.org/abs/2006.02595)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/138)  
 
 <a id="markdown-gan-arch-search" name="gan-arch-search"></a>
 ### GAN Architecture Search
