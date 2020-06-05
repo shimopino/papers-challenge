@@ -36,6 +36,12 @@ $ python main.py
 $ python -B main.py
 ```
 
+if you use multirun on Hydra
+
+```sh
+$ python main.py --multirun model.FQ.vq_type=Normal,EMA model.FQ.dict_size=1,5,10 hydra.sweep.dir=\${logging.log_dir} hydra.sweep.subdir=\${model.FQ.vq_type}/\${model.FQ.dict_size}
+```
+
 ## start tensorboard
 
 ```bash

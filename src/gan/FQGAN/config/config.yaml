@@ -1,0 +1,47 @@
+hydra:
+  run:
+    dir: logs/fqgan_32_128z_256ngf_128ndf_EMA_10_3L_10
+logging:
+  log_dir: logs/fqgan_32_128z_256ngf_128ndf_EMA_10_3L_10
+  experiment_name: fqgan-type-dictionary
+dataset:
+  dataset_dir: datasets
+  dataset_name: cifar10
+model:
+  GAN:
+    nz: 128
+    ngf: 256
+    ndf: 128
+    loss_type: hinge # "hinge", "ns", "gan", "wasserstein"
+  FQ:
+    fq_type: EMA   # null, Normal, EMA
+    dict_size: 10
+    quant_layers:
+      - 3
+    fq_strength: 10.0
+optimizer:
+  lrG: 0.0002
+  lrD: 0.0002
+  beta1: 0.0
+  beta2: 0.9
+training:
+  num_workers: 4
+  batch_size: 64
+  n_dis: 5
+  num_steps: 100000
+  is_amp: true
+  opt_level: O1
+metrics:
+  fid:
+    num_real_samples: 50000
+    num_fake_samples: 50000
+    evaluate_step: 100000
+  inception_score:
+    num_samples: 50000
+    evaluate_step: 100000
+  kid:
+    num_subsets: 50
+    subset_size: 1000
+    evaluate_step: 100000
+  
+
