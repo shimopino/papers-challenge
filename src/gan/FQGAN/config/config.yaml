@@ -1,8 +1,8 @@
 hydra:
   run:
-    dir: logs/fqgan_32_128z_256ngf_128ndf_EMA_10_3L_10
+    dir: logs/fqgan_pd_32_128z_256ngf_128ndf
 logging:
-  log_dir: logs/fqgan_32_128z_256ngf_128ndf_EMA_10_3L_10
+  log_dir: logs/fqgan_pd_32_128z_256ngf_128ndf
   experiment_name: fqgan-type-dictionary
 dataset:
   dataset_dir: datasets
@@ -13,8 +13,10 @@ model:
     ngf: 256
     ndf: 128
     loss_type: hinge # "hinge", "ns", "gan", "wasserstein"
+    type: conditional  # [unconditional, conditional]
+    num_classes: 10
   FQ:
-    fq_type: EMA   # null, Normal, EMA
+    fq_type: null   # null, Normal, EMA
     dict_size: 10
     quant_layers:
       - 3

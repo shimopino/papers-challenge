@@ -7,23 +7,49 @@ import torch.optim as optim
 import torch_mimicry as mmc
 from apex import amp
 from models.fqgan_32 import FQGANGenerator, FQGANDiscriminator
+from models.fqgan_pd_32 import FQGANProjectionGenerator, FQGANProjectionDiscriminator
 from mimicry_wrappers import MlflowLogger
+
+
+def get_models(cfg):
+    if cfg.model.GAN.type == "conditional":
+        netG = FQGANProjectionGenerator(num_classes=cfg.model.GAN.num_classes,
+                                        nz=cfg.model.GAN.nz,
+                                        ngf=cfg.model.GAN.ngf,
+                                        loss_type=cfg.model.GAN.loss_type,
+                                        fq_strength=cfg.model.FQ.fq_strength,
+                                        is_amp=cfg.training.is_amp)
+        netD = FQGANProjectionDiscriminator(num_classes=cfg.model.GAN.num_classes,
+                                            ndf=cfg.model.GAN.ndf,
+                                            loss_type=cfg.model.GAN.loss_type,
+                                            fq_type=cfg.model.FQ.fq_type,
+                                            dict_size=cfg.model.FQ.dict_size,
+                                            quant_layers=cfg.model.FQ.quant_layers,
+                                            fq_strength=cfg.model.FQ.fq_strength,
+                                            is_amp=cfg.training.is_amp)
+
+    else:
+        netG = FQGANGenerator(nz=cfg.model.GAN.nz,
+                              ngf=cfg.model.GAN.ngf,
+                              loss_type=cfg.model.GAN.loss_type,
+                              fq_strength=cfg.model.FQ.fq_strength,
+                              is_amp=cfg.training.is_amp)
+        netD = FQGANDiscriminator(ndf=cfg.model.GAN.ndf,
+                                  loss_type=cfg.model.GAN.loss_type,
+                                  fq_type=cfg.model.FQ.fq_type,
+                                  dict_size=cfg.model.FQ.dict_size,
+                                  quant_layers=cfg.model.FQ.quant_layers,
+                                  fq_strength=cfg.model.FQ.fq_strength,
+                                  is_amp=cfg.training.is_amp)
+
+    return netG, netD
 
 
 def build_models(cfg, device):
     # Define models and optimizers
-    netG = FQGANGenerator(nz=cfg.model.GAN.nz,
-                          ngf=cfg.model.GAN.ngf,
-                          loss_type=cfg.model.GAN.loss_type,
-                          fq_strength=cfg.model.FQ.fq_strength,
-                          is_amp=cfg.training.is_amp).to(device)
-    netD = FQGANDiscriminator(ndf=cfg.model.GAN.ndf,
-                              loss_type=cfg.model.GAN.loss_type,
-                              fq_type=cfg.model.FQ.fq_type,
-                              dict_size=cfg.model.FQ.dict_size,
-                              quant_layers=cfg.model.FQ.quant_layers,
-                              fq_strength=cfg.model.FQ.fq_strength,
-                              is_amp=cfg.training.is_amp).to(device)
+    netG, netD = get_models(cfg)
+    netG, netD = netG.to(device), netD.to(device)
+
     optD = optim.Adam(netD.parameters(),
                       cfg.optimizer.lrD,
                       betas=(cfg.optimizer.beta1, cfg.optimizer.beta2))
