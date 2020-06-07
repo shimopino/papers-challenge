@@ -58,7 +58,7 @@ CIFAR10 (32x32)
 |model|FQ Type|Dictionary Size|Layers|FID|IS|KID|
 |---|---|---|---|---|---|---|
 |SNGAN|-|-|-|16.35|7.89|0.0123|
-|FQGAN|-|-|-|-|-|-|
+|SNGAN-pd|-|-|-|11.84|8.44|0.0073|
 |FQGAN|-|-|-|-|-|-|
 
 
