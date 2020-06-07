@@ -23,7 +23,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Image Editting](#image-editting)
     - [Denoising](#denoising)
     - [Disentanglement](#disentanglement)
-    - [Consistency Regularization](#consistency-regularization)
+    - [Regularization](#gan-regularization)
     - [GAN Architecture Search](#gan-architecture-search)
     - [Survey](#survey)
     - [Variational AutoEncoder](#vae)
@@ -156,8 +156,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 - [[arXiv:2002.03754] Unsupervised Discovery of Interpretable Directions in the GAN Latent Space](https://arxiv.org/abs/2002.03754)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/8)
 
-<a id="markdown-consistency-regularization" name="consistency-regularization"></a>
-### Consistency Regularization
+<a id="markdown-gan-regularization" name="gan-regularization"></a>
+### Regularization
 
 - [[arXiv:1904.12848] Unsupervised Data Augmentation for Consistency Training](https://arxiv.org/abs/1904.12848)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/20)
