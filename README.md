@@ -161,6 +161,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 
 - [[arXiv:1904.12848] Unsupervised Data Augmentation for Consistency Training](https://arxiv.org/abs/1904.12848)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/20)
+- [[arXiv:1910.12027] Consistency Regularization for Generative Adversarial Networks](https://arxiv.org/abs/1910.12027)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/141)
 - [[arXiv:2002.04724] Improved Consistency Regularization for GAN](https://arxiv.org/abs/2002.04724)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/11)
 - [[arXiv:2006.02595] Image Augmentations for GAN Training](https://arxiv.org/abs/2006.02595)
