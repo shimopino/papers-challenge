@@ -36,3 +36,7 @@ RUN useradd ${USERNAME} -u ${UID} -G sudo -s /bin/bash -m  && \
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 ENV HOME /home/${USERNAME}
+
+RUN pip install --no-cache-dir mlflow
+
+ENV PATH $PATH:/home/${USERNAME}/.local/bin/
