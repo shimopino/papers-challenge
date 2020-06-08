@@ -50,9 +50,6 @@ class RandomResizedCropTensor:
             j = (W - w) // 2
             z = i, j, h, w
 
-        print(single_tensor.shape)
-        print(i, j, h, w)
-
         return F.interpolate(single_tensor[:, i:i + h, j:j + w].unsqueeze(0),
                              size=self.size,
                              mode="bilinear")[0]
