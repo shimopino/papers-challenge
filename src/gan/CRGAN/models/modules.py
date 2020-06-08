@@ -1,13 +1,16 @@
 import math
 import random
+import torch
 import torch.nn.functional as F
 
 
 class RandomResizedCropTensor:
-    def __init__(self, size, scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.)):
+    def __init__(self, size, scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.), p=0.5):
+
         self.size = size
         self.scale = scale
         self.ratio = ratio
+        self.p = p
 
     def apply(self, single_tensor):
         r"""Radndomly Resize and Crop torch.Tensor
@@ -84,8 +87,6 @@ class RandomHorizontalFlipTensor:
 
 
 if __name__ == "__main__":
-
-    import torch
 
     sample = torch.rand(10, 3, 64, 64).to("cuda:0")
     sample.mul_(2).sub_(1)
