@@ -5,7 +5,7 @@ from apex import amp
 from torch_mimicry.nets import gan
 from torch_mimicry.modules import SNLinear, GBlock, DBlock, DBlockOptimized
 
-from modules import RandomResizedCropTensor, RandomHorizontalFlipTensor
+from .modules import RandomResizedCropTensor, RandomHorizontalFlipTensor
 
 
 class ICRGenerator(gan.BaseGenerator):
@@ -61,7 +61,7 @@ class ICRGenerator(gan.BaseGenerator):
 
         self.zero_grad()
 
-        batch_size = real_batch[0].shape(0)
+        batch_size = real_batch[0].shape[0]
 
         fake_images = self.generate_images(num_images=batch_size,
                                            device=device)
