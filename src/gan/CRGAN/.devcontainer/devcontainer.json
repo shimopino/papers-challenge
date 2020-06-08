@@ -39,7 +39,7 @@
     "python.jediEnabled": false,
     "python.formatting.provider": "black",
     "editor.formatOnSave": false,
-    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.docstringFormat": "numpy",
     "autoDocstring.startOnNewLine": true,
   },
   "extensions": [
