@@ -224,8 +224,9 @@ class ICRDiscriminator(gan.BaseDiscriminator):
 
         # log statistics
         log_data.add_metric("errD", errD, group="loss")
-        log_data.add_metric("errD_augmented_real", errD_augmented_real, group="loss")
-        log_data.add_metric("errD_augmented_fake", errD_augmented_fake, group="loss")
+        if self.is_transforms:
+            log_data.add_metric("errD_augmented_real", self.real_lambda * errD_augmented_real, group="loss")
+            log_data.add_metric("errD_augmented_fake", self.fake_lambda * errD_augmented_fake, group="loss")
         log_data.add_metric("D(x)", D_x, group="prob")
         log_data.add_metric("D(G(x))", D_Gz, group="prob")
 
