@@ -51,6 +51,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 <a id="markdown-image-generation" name="image-generation"></a>
 ### Image Generation
 
+- [[arXiv:1805.08318] Self-Attention Generative Adversarial Networks](https://arxiv.org/abs/1805.08318)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/144)
 - [[arXiv:1809.11096] Large Scale GAN Training for High Fidelity Natural Image Synthesis](https://arxiv.org/abs/1809.11096)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/106)
 - [[arXiv:1810.01365] On Self Modulation for Generative Adversarial Networks](https://arxiv.org/abs/1810.01365)

@@ -1,0 +1,5 @@
+flake8
+black
+jupyter
+hydra-core
+torch-mimicry
