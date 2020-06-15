@@ -216,6 +216,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/36)
 - [[arXiv:2004.13587] Do We Need Fully Connected Output Layers in Convolutional Networks?](https://arxiv.org/abs/2004.13587)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/107)
+- [[arXiv:2004.13621] Exploring Self-attention for Image Recognition](https://arxiv.org/abs/2004.13621)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/108)
 - [[arXiv:2006.03677] Visual Transformers: Token-based Image Representation and Processing for Computer Vision](https://arxiv.org/abs/2006.03677)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/147)
 
