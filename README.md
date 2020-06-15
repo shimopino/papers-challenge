@@ -29,7 +29,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Variational AutoEncoder](#vae)
   - [Computer Vision](#computer-vision)
     - [Learning Strategy](#learning-strategy)
-    - [Convolution Architecture](#convolution-architecture)
+    - [Architecture](#cv-arch)
     - [Architecture Search](#architecture-search)
     - [Normalization](#cv-norm)
     - [Data Augmentation](#data-augmentation)
@@ -204,8 +204,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 - [[arXiv:2003.00152] Training BatchNorm and Only BatchNorm: On the Expressive Power of Random Features in CNNs](https://arxiv.org/abs/2003.00152)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/102)
 
-<a id="markdown-conv-arch" name="conv-arch"></a>
-### Convolution Architecture
+<a id="markdown-cv-arch" name="cv-arch"></a>
+### Architecture
 
 - [[arXiv:1811.12231] ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness](https://arxiv.org/abs/1811.12231)
 - [[arXiv:1906.05909] Stand-Alone Self-Attention in Vision Models](https://arxiv.org/abs/1906.05909)
@@ -216,6 +216,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/36)
 - [[arXiv:2004.13587] Do We Need Fully Connected Output Layers in Convolutional Networks?](https://arxiv.org/abs/2004.13587)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/107)
+- [[arXiv:2006.03677] Visual Transformers: Token-based Image Representation and Processing for Computer Vision](https://arxiv.org/abs/2006.03677)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/147)
 
 <a id="markdown-arch-search" name="arch-search"></a>
 ### Architecture Search
