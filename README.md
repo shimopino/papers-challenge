@@ -177,7 +177,9 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 <a id="markdown-gan-arch-search" name="gan-arch-search"></a>
 ### GAN Architecture Search
 - [[arXiv:2003.08936] GAN Compression: Efficient Architectures for Interactive Conditional GANs](https://arxiv.org/abs/2003.08936)
-  - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/48)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/48)
+- [[arXiv:2006.08198] AutoGAN-Distiller: Searching to Compress Generative Adversarial Networks](https://arxiv.org/abs/2006.08198)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/154)
 
 <a id="markdown-gan-survey" name="gan-survey"></a>
 ### Survey
