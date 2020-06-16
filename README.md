@@ -197,6 +197,9 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 
 <a id="markdown-learn-strg" name="learn-strg"></a>
 ### Learning Strategy
+
+- [[arXiv:1911.05722] Momentum Contrast for Unsupervised Visual Representation Learning](https://arxiv.org/abs/1911.05722)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/143)
 - [[arXiv:1911.09665] Adversarial Examples Improve Image Recognition](https://arxiv.org/abs/1911.09665)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/3)
 - [[arXiv:2004.11362] Supervised Contrastive Learning](https://arxiv.org/abs/2004.11362)
