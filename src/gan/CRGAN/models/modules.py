@@ -1,98 +1,79 @@
-import math
-import random
+import numpy as np
 import torch
-import torch.nn.functional as F
 
 
-class RandomResizedCropTensor:
-    def __init__(self, size, scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.), p=0.5):
+class NTXentLoss(torch.nn.Module):
 
-        self.size = size
-        self.scale = scale
-        self.ratio = ratio
-        self.p = p
+    def __init__(self, device, batch_size, temperature=0.5, use_cosine_similarity=True):
+        super(NTXentLoss, self).__init__()
+        self.batch_size = batch_size
+        self.temperature = temperature
+        self.device = device
+        self.softmax = torch.nn.Softmax(dim=-1)
+        self.mask_samples_from_same_repr = self._get_correlated_mask().type(torch.bool)
+        self.similarity_function = self._get_similarity_function(use_cosine_similarity)
+        self.criterion = torch.nn.CrossEntropyLoss(reduction="sum")
 
-    def apply(self, single_tensor):
-        r"""Radndomly Resize and Crop torch.Tensor
-        :param single_tensor: torch.Tensor [C, H, W]
-        """
+    def _get_similarity_function(self, use_cosine_similarity):
+        if use_cosine_similarity:
+            self._cosine_similarity = torch.nn.CosineSimilarity(dim=-1)
+            return self._cosine_simililarity
+        else:
+            return self._dot_simililarity
 
-        H, W = single_tensor.shape[1], single_tensor.shape[2]
-        area = H * W
+    def _get_correlated_mask(self):
+        diag = np.eye(2 * self.batch_size)
+        l1 = np.eye((2 * self.batch_size), 2 * self.batch_size, k=-self.batch_size)
+        l2 = np.eye((2 * self.batch_size), 2 * self.batch_size, k=self.batch_size)
+        mask = torch.from_numpy((diag + l1 + l2))
+        mask = (1 - mask).type(torch.bool)
+        return mask.to(self.device)
 
-        for _ in range(10):
-            target_area = random.uniform(*self.scale) * area
-            log_ratio = math.log(self.ratio[0]), math.log(self.ratio[1])
-            aspect_ratio = math.exp(random.uniform(*log_ratio))
-            z = None
-            w = int(round(math.sqrt(target_area * aspect_ratio)))
-            h = int(round(math.sqrt(target_area / aspect_ratio)))
+    @staticmethod
+    def _dot_simililarity(x, y):
+        v = torch.tensordot(x.unsqueeze(1), y.T.unsqueeze(0), dims=2)
+        # x shape: (N, 1, C)
+        # y shape: (1, C, 2N)
+        # v shape: (N, 2N)
+        return v
 
-            if (0 < w <= W) and (0 < h <= H):
-                i = random.randint(0, H - h)
-                j = random.randint(0, W - w)
-                z = i, j, h, w
-                break
+    def _cosine_simililarity(self, x, y):
+        # x shape: (N, 1, C)
+        # y shape: (1, 2N, C)
+        # v shape: (N, 2N)
+        v = self._cosine_similarity(x.unsqueeze(1), y.unsqueeze(0))
+        return v
 
-        if z is None:
-            in_ratio = float(W) / float(H)
-            if (in_ratio < min(self.ratio)):
-                w = W
-                h = int(round(w / min(self.ratio)))
-            elif (in_ratio > max(self.ratio)):
-                h = H
-                w = int(round(h * max(self.ratio)))
-            else:
-                w = W
-                h = H
+    def forward(self, zis, zjs):
+        representations = torch.cat([zjs, zis], dim=0)
 
-            i = (H - h) // 2
-            j = (W - w) // 2
-            z = i, j, h, w
+        similarity_matrix = self.similarity_function(representations, representations)
 
-        return F.interpolate(single_tensor[:, i:i + h, j:j + w].unsqueeze(0),
-                             size=self.size,
-                             mode="bilinear")[0]
+        # filter out the scores from the positive samples
+        l_pos = torch.diag(similarity_matrix, self.batch_size)
+        r_pos = torch.diag(similarity_matrix, -self.batch_size)
+        positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
 
-    def __call__(self, image_tensor):
-        r"""apply RandomResizedCrop to 4D-Tensor
-        :param image_tensor: torch.Tensor [B, C, H, W]
-        """
+        negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
 
-        return torch.stack([self.apply(image) if random.random() > self.p else image
-                            for image in image_tensor], dim=0)
+        logits = torch.cat((positives, negatives), dim=1)
+        logits /= self.temperature
 
+        labels = torch.zeros(2 * self.batch_size).to(self.device).long()
+        loss = self.criterion(logits, labels)
 
-class RandomHorizontalFlipTensor:
-    def __init__(self, p=0.5):
-        self.p = p
-
-    def apply(self, single_tensor):
-        r"""Radndomly Horizontally Flip torch.Tensor
-        :param single_tensor: torch.Tensor [C, H, W]
-        """
-
-        return torch.flip(single_tensor, dims=(2, ))
-
-    def __call__(self, image_tensor):
-        r"""apply Random Horizontally Flipping to 4D-tensor
-        :param image_tensor: torch.Tensor [B, C, H, W]
-        """
-
-        return torch.stack([self.apply(image) if random.random() > self.p else image
-                            for image in image_tensor])
+        return loss / (2 * self.batch_size)
 
 
 if __name__ == "__main__":
 
-    sample = torch.rand(10, 3, 64, 64).to("cuda:0")
-    sample.mul_(2).sub_(1)
+    batch_size = 100
+    ndf = 256
 
-    H, W = sample.shape[2], sample.shape[3]
-    size = (H, W)
+    zis = torch.randn(batch_size, ndf)
+    zjs = torch.randn(batch_size, ndf)
+    criterion = NTXentLoss(device="cpu", batch_size=100)
 
-    tranform_rcrop = RandomResizedCropTensor(size)
-    sample_cropped = tranform_rcrop(sample)
+    loss = criterion(zis, zjs)
 
-    transform_flip = RandomHorizontalFlipTensor()
-    sample_flip = transform_flip(sample)
+    print(loss.item())
