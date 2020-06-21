@@ -3,3 +3,4 @@ black
 jupyter
 hydra-core
 torch-mimicry
+kornia
