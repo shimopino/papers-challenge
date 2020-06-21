@@ -57,8 +57,6 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/144)
 - [[arXiv:1809.11096] Large Scale GAN Training for High Fidelity Natural Image Synthesis](https://arxiv.org/abs/1809.11096)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/106)
-- [[arXiv:1810.01365] On Self Modulation for Generative Adversarial Networks](https://arxiv.org/abs/1810.01365)
-    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/140)
 - [[arXiv:1905.01164] SinGAN: Learning a Generative Model from a Single Natural Image](https://arxiv.org/abs/1905.01164)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/1)
 - [[arXiv:1912.11035] CNN-generated images are surprisingly easy to spot... for now](https://arxiv.org/abs/1912.11035)
@@ -77,10 +75,14 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/81)
 
 <a id="markdown-ss-gan" name="ss-gan"></a>
-### Image Generation
+### Self Supervised
 
+- [[arXiv:1810.01365] On Self Modulation for Generative Adversarial Networks](https://arxiv.org/abs/1810.01365)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/140)
 - [[arXiv:1811.11212] Self-Supervised GANs via Auxiliary Rotation Loss](https://arxiv.org/abs/1811.11212)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/124)
+- [[arXiv:2006.10728] Diverse Image Generation via Self-Conditioned GANs](https://arxiv.org/abs/2006.10728)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/156)
 
 <a id="markdown-image-to-image-translation" name="image-to-image-translation"></a>
 ### Image-to-Image Translation
