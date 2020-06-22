@@ -262,6 +262,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/38)
 - [[arXiv:2003.04297] Improved Baselines with Momentum Contrastive Learning](https://arxiv.org/abs/2003.04297)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/46)
+- [[arXiv:2006.07733] Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning](https://arxiv.org/abs/2006.07733)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/159)
 
 <a id="markdown-anomaly-detection" name="anomaly-detection"></a>
 ### Anomaly Detection
