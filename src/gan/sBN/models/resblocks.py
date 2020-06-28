@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torch_mimicry.modules import SNConv2d
-from layers import SBN, SCBN
+from .layers import SBN, SCBN
 
 
 class SGBlock(nn.Module):
