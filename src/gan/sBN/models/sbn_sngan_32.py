@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from apex import amp
 
 from torch_mimicry.modules.layers import SNLinear
 from torch_mimicry.modules.resblocks import DBlockOptimized, DBlock
@@ -9,10 +10,11 @@ from .resblocks import SGBlock
 from .layers import SBN
 
 
-class SBNSNGANGenerator32(sngan_base.SNGANGenerator):
+class SBNSNGANGenerator32(sngan_base.SNGANBaseGenerator):
 
-    def __init__(self, nz=128, ngf=256, bottom_width=4, **kwargs):
+    def __init__(self, nz=128, ngf=256, bottom_width=4, is_amp=False, **kwargs):
         super().__init__(nz=nz, ngf=ngf, bottom_width=bottom_width, **kwargs)
+        self.is_amp = is_amp
 
         # build the layers
         self.l1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
@@ -106,8 +108,12 @@ class SBNSNGANGenerator32(sngan_base.SNGANGenerator):
         # Compute loss
         errG = self.compute_gan_loss(output=output)
 
-        # Backprop and update gradients
-        errG.backward()
+        # backward using apex.amp
+        if self.is_amp:
+            with amp.scale_loss(errG, optG) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            errG.backward()
         optG.step()
 
         # Log statistics
@@ -123,8 +129,9 @@ class SBNSNGANDiscriminator32(sngan_base.SNGANBaseDiscriminator):
         ndf (int): Variable controlling discriminator feature map sizes.
         loss_type (str): Name of loss to use for GAN loss.
     """
-    def __init__(self, ndf=128, **kwargs):
+    def __init__(self, ndf=128, is_amp=False, **kwargs):
         super().__init__(ndf=ndf, **kwargs)
+        self.is_amp = is_amp
 
         # Build layers
         self.block1 = DBlockOptimized(3, self.ndf)
@@ -157,3 +164,49 @@ class SBNSNGANDiscriminator32(sngan_base.SNGANBaseDiscriminator):
         output = self.l5(h)
 
         return output
+
+    def train_step(self,
+                   real_batch,
+                   netG,
+                   optD,
+                   log_data,
+                   device=None,
+                   global_step=None,
+                   **kwargs):
+
+        self.zero_grad()
+
+        # produce real images
+        real_images, _ = real_batch
+        batch_size = real_images.shape[0]
+
+        # produce fake images
+        fake_images = netG.generate_images(num_images=batch_size,
+                                           device=device).detach()
+
+        # comput real and fake logits for gan loss
+        output_real = self.forward(real_images)
+        output_fake = self.forward(fake_images)
+
+        # compute GAN loss.
+        errD = self.compute_gan_loss(output_real=output_real,
+                                     output_fake=output_fake)
+
+        # backprop and update gradients
+        if self.is_amp:
+            with amp.scale_loss(errD, optD) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            errD.backward()
+        optD.step()
+
+        # Compute probabilities
+        D_x, D_Gz = self.compute_probs(output_real=output_real,
+                                       output_fake=output_fake)
+
+        # Log statistics for D once out of loop
+        log_data.add_metric('errD', errD, group='loss')
+        log_data.add_metric('D(x)', D_x, group='prob')
+        log_data.add_metric('D(G(z))', D_Gz, group='prob')
+
+        return log_data
