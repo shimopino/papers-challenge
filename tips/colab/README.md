@@ -11,3 +11,5 @@ function ClickButton() {
 }
 setInterval(ClickButton, 60000) // set 60,000 millisecond
 ```
+
+- [Google Colab Tips for Power Users](https://madewithml.com/projects/1609/google-colab-tips-for-power-users/)
