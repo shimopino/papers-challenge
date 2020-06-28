@@ -95,7 +95,7 @@ class SGBlock(nn.Module):
 
             nn.init.xavier_uniform_(self.c_sc.weight.data, 1.0)
 
-    def _upsample(self, x, conv):
+    def _upsample_conv(self, x, conv):
         r"""
         Helper function for performing convolution after upsampling.
         """
