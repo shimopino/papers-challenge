@@ -179,6 +179,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/150)
 - [[arXiv:2006.10738] Differentiable Augmentation for Data-Efficient GAN Training](https://arxiv.org/abs/2006.10738)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/158)
+- [[arXiv:2006.05338] Towards Good Practices for Data Augmentation in GAN Training](https://arxiv.org/abs/2006.05338)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/169)
 
 <a id="markdown-gan-arch-search" name="gan-arch-search"></a>
 ### GAN Architecture Search
