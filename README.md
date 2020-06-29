@@ -174,13 +174,14 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 - [[arXiv:2002.04724] Improved Consistency Regularization for GAN](https://arxiv.org/abs/2002.04724)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/11)
 - [[arXiv:2006.02595] Image Augmentations for GAN Training](https://arxiv.org/abs/2006.02595)
-    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/138)  
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/138)
+- [[arXiv:2006.05338] Towards Good Practices for Data Augmentation in GAN Training](https://arxiv.org/abs/2006.05338)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/169)
 - [[arXiv:2006.06676] Training Generative Adversarial Networks with Limited Data](https://research.nvidia.com/publication/2020-06_Training-Generative-Adversarial)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/150)
 - [[arXiv:2006.10738] Differentiable Augmentation for Data-Efficient GAN Training](https://arxiv.org/abs/2006.10738)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/158)
-- [[arXiv:2006.05338] Towards Good Practices for Data Augmentation in GAN Training](https://arxiv.org/abs/2006.05338)
-    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/169)
+
 
 <a id="markdown-gan-arch-search" name="gan-arch-search"></a>
 ### GAN Architecture Search
