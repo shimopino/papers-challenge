@@ -209,6 +209,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 <a id="markdown-learn-strg" name="learn-strg"></a>
 ### Learning Strategy
 
+- [[arXiv:1907.08610] Lookahead Optimizer: k steps forward, 1 step back](https://arxiv.org/abs/1907.08610)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/167)
 - [[arXiv:1911.05722] Momentum Contrast for Unsupervised Visual Representation Learning](https://arxiv.org/abs/1911.05722)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/143)
 - [[arXiv:1911.09665] Adversarial Examples Improve Image Recognition](https://arxiv.org/abs/1911.09665)
