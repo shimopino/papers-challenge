@@ -5,7 +5,8 @@ from apex import amp
 from torch_mimicry.nets import gan
 from torch_mimicry.modules import SNLinear, GBlock, DBlock, DBlockOptimized
 
-from .modules import RandomResizedCropTensor, RandomHorizontalFlipTensor
+from .modules import NTXentLoss
+from .data_aug import SimCLRAugmentation
 
 
 class ICRGenerator(gan.BaseGenerator):
@@ -95,6 +96,7 @@ class ICRDiscriminator(gan.BaseDiscriminator):
                  is_transforms=False,
                  real_lambda=10,
                  fake_lambda=5,
+                 input_shape=None,
                  **kwargs):
         super().__init__(ndf=ndf,
                          loss_type=loss_type,
@@ -104,6 +106,7 @@ class ICRDiscriminator(gan.BaseDiscriminator):
         self.is_transforms = is_transforms
         self.real_lambda = real_lambda
         self.fake_lambda = fake_lambda
+        self.input_shape = input_shape
 
         self.block1 = DBlockOptimized(3, self.ndf)
         self.block2 = DBlock(self.ndf, self.ndf, downsample=True)
@@ -114,6 +117,13 @@ class ICRDiscriminator(gan.BaseDiscriminator):
 
         # initialize the weights
         nn.init.xavier_normal_(self.l5.weight.data, 1.0)
+
+        # get transforms
+        if self.is_transforms:
+            self.apply_transforms = SimCLRAugmentation(self.input_shape)
+
+        # projection MLP
+        self.prodjection = nn.Linear(self.ndf, self.ndf)
 
     def forward(self, x):
 
@@ -127,29 +137,9 @@ class ICRDiscriminator(gan.BaseDiscriminator):
         h = torch.sum(h, dim=(2, 3))
         output = self.l5(h)
 
-        return output
+        f = self.projection(h)
 
-    def apply_transforms(self, tensor):
-        """
-        apply RandomResizedCrop and RandomHorizontalFlip to 4D-Tensorflow
-
-        Parameters
-        ----------
-        tensor : torch.Tensor
-            input image tensor like (B, C, H, W)
-
-        Returns
-        -------
-        torch.Tensor
-            image tensor that RandomResizedCrop and RandomHorizontalFlip apply
-        """
-
-        H, W = tensor.shape[2], tensor.shape[3]
-
-        tensor = RandomResizedCropTensor(size=(H, W))(tensor)
-        tensor = RandomHorizontalFlipTensor()(tensor)
-
-        return tensor
+        return output, f
 
     def train_step(self,
                    real_batch,
@@ -177,12 +167,44 @@ class ICRDiscriminator(gan.BaseDiscriminator):
         # Generative Loss
         ##################
         # compute real and fake logits
-        output_real = self.forward(real_images)
-        output_fake = self.forward(fake_images)
+        output_real, _ = self.forward(real_images)
+        output_fake, _ = self.forward(fake_images)
 
         # compute gan loss
         errD = self.compute_gan_loss(output_real=output_real,
                                      output_fake=output_fake)
+
+        ###################################
+        # Augment both real and fake images
+        ###################################
+        # get augmented real images
+        real_images_aug1 = self.apply_transforms(real_images)
+        real_images_aug2 = self.apply_transforms(real_images)
+
+        # get augmented fake images
+        fake_images_aug1 = self.apply_transforms(fake_images)
+        fake_images_aug2 = self.apply_transforms(fake_images)
+
+        #####################################
+        # Balanced Consistency Regularization
+        #####################################
+        # compute augmented real and fake logits
+        output_real_aug1, xiz_real_aug1 = self.forward(real_images_aug1)
+        _, xjz_real_aug2 = self.forward(real_images_aug2)
+
+        output_fake_aug1, xiz_fake_aug1 = self.forward(fake_images_aug1)
+        _, xjz_fake_aug2 = self.forward(fake_images_aug2)
+
+        # compute Balanced Consistency Regularization
+        errD += F.mse_loss(output_real, output_real_aug1)
+        errD += F.mse_loss(output_real, output_fake_aug1)
+
+        #####################################
+        # Contrastive Loss regularized GAN
+        #####################################
+
+        errD += 
+
 
         if self.is_transforms:
             #########################
