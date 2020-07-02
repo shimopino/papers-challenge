@@ -41,6 +41,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Survey](#survey-1)
   - [Tabular](#tabular)
     - [Concept Shift](#concept-shift)
+  - [Learning Resources](#resources)
 <!-- /TOC -->
 
 ---
@@ -307,3 +308,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 
 - [[arXiv:2004.03045] Adversarial Validation Approach to Concept Drift Problem in Automated Machine Learning Systems](https://arxiv.org/abs/2004.03045)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/68)
+   
+<a id="markdown-resources" name="resources"></a>
+## Learning Resources
+
+- [GANs in Computer Vision](https://github.com/The-AI-Summer/GANs-in-Computer-Vision)
