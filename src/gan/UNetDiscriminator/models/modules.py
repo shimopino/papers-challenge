@@ -188,3 +188,25 @@ class DBlockDecoder(nn.Module):
         """
 
         return self._residual(x) + self._shortcut(x)
+
+
+if __name__ == "__main__":
+    inputs = torch.randn(10, 128, 32, 32)
+
+    # DBlockDecoder when upsample=False
+    dblock = DBlockDecoder(128, 128, upsample=False)
+    output = dblock(inputs)
+    print(output.shape)
+
+    # backward
+    loss = F.mse_loss(output, torch.ones(10, 128, 32, 32))
+    loss.backward()
+
+    # DBlockDecoder when upsample=True
+    dblock = DBlockDecoder(128, 128, upsample=True)
+    output = dblock(inputs)
+    print(output.shape)
+
+    # backward
+    loss = F.mse_loss(output, torch.ones(10, 128, 64, 64))
+    loss.backward()
