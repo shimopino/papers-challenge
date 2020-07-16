@@ -76,6 +76,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/81)
 - [[arXiv:2006.12681] Contrastive Generative Adversarial Networks](https://arxiv.org/abs/2006.12681)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/163)
+- [[arXiv:2006.14567] Taming GANs with Lookahead](https://arxiv.org/abs/2006.14567)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/168)
     
 <a id="markdown-ss-gan" name="ss-gan"></a>
 ### Self Supervised
