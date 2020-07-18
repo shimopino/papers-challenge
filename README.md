@@ -115,7 +115,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/45)
 - [[arXiv:2003.07101] Synthesizing human-like sketches from natural images using a conditional convolutional decoder](https://arxiv.org/abs/2003.07101)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/44)
-
+- [[arXiv:2007.05471] Geometric Style Transfer](https://arxiv.org/abs/2007.05471)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/179)
 
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
 ### Text-to-Image Translation
