@@ -78,7 +78,9 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/163)
 - [[arXiv:2006.14567] Taming GANs with Lookahead](https://arxiv.org/abs/2006.14567)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/168)
-    
+- [[arXiv:2007.06600] Closed-Form Factorization of Latent Semantics in GANs](https://arxiv.org/abs/2007.06600)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/180)
+
 <a id="markdown-ss-gan" name="ss-gan"></a>
 ### Self Supervised
 
