@@ -76,7 +76,11 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/81)
 - [[arXiv:2006.12681] Contrastive Generative Adversarial Networks](https://arxiv.org/abs/2006.12681)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/163)
-    
+- [[arXiv:2006.14567] Taming GANs with Lookahead](https://arxiv.org/abs/2006.14567)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/168)
+- [[arXiv:2007.06600] Closed-Form Factorization of Latent Semantics in GANs](https://arxiv.org/abs/2007.06600)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/180)
+
 <a id="markdown-ss-gan" name="ss-gan"></a>
 ### Self Supervised
 
@@ -113,7 +117,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/45)
 - [[arXiv:2003.07101] Synthesizing human-like sketches from natural images using a conditional convolutional decoder](https://arxiv.org/abs/2003.07101)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/44)
-
+- [[arXiv:2007.05471] Geometric Style Transfer](https://arxiv.org/abs/2007.05471)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/179)
 
 <a id="markdown-text-to-image-translation" name="text-to-image-translation"></a>
 ### Text-to-Image Translation
