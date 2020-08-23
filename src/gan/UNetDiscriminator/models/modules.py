@@ -122,7 +122,6 @@ class DBlockDecoder(nn.Module):
         self.hidden_channels = hidden_channels if hidden_channels is not None else out_channels
         self.learnable_sc = in_channels != out_channels or upsample
         self.upsample = upsample
-
         self.spectral_norm = spectral_norm
 
         # Build the layers
@@ -161,8 +160,7 @@ class DBlockDecoder(nn.Module):
         r"""
         Helper function for feedforwarding through main layers.
         """
-        h = x
-        h = self.activation(h)
+        h = self.activation(x)
         h = self._upsample_conv(h, self.c1) if self.upsample else self.c1(h)
         h = self.activation(h)
         h = self.c2(h)

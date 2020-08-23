@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from apex import amp
 
 from torch_mimicry.nets import gan
 from torch_mimicry.modules import GBlock, DBlock, DBlockOptimized
 from torch_mimicry.modules import SNLinear, SNConv2d
 
-from modules import SelfAttention, DBlockDecoder
+from .modules import SelfAttention, DBlockDecoder
 
 
 class UNetGenerator(gan.BaseGenerator):
@@ -21,10 +22,12 @@ class UNetGenerator(gan.BaseGenerator):
         loss_type (str): Name of loss to use for GAN loss.
     """
 
-    def __init__(self, nz=128, ngf=256, bottom_width=4, loss_type="ns", **kwargs):
+    def __init__(self, nz=128, ngf=256, bottom_width=4, loss_type="ns", is_amp=False, **kwargs):
         super().__init__(nz=nz, ngf=ngf, bottom_width=bottom_width, loss_type=loss_type, **kwargs)
 
         assert self.loss_type == "ns", "yet, you can select [ns] only"
+
+        self.is_amp = is_amp
 
         self.l1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
         self.block2 = GBlock(self.ngf, self.ngf, upsample=True)
@@ -32,7 +35,7 @@ class UNetGenerator(gan.BaseGenerator):
         self.block4 = GBlock(self.ngf, self.ngf, upsample=True)
         self.b5 = nn.BatchNorm2d(self.ngf)
         self.activation = nn.ReLU(inplace=True)
-        self.c5 = nn.Conv2d(self.ngf, 3, kernel_size=3, stride=1, padding=0)
+        self.c5 = nn.Conv2d(self.ngf, 3, kernel_size=3, stride=1, padding=1)
 
         # initialize the weights
         nn.init.xavier_uniform_(self.l1.weight.data, 1.0)
@@ -59,9 +62,9 @@ class UNetGenerator(gan.BaseGenerator):
         h = self.non_local_block(h)
         h = self.block4(h)
         h = self.activation(self.b5(h))
-        output = torch.tanh(self.c5(h))
+        h = torch.tanh(self.c5(h))
 
-        return output
+        return h
 
     def compute_seg_loss(self, output):
         r"""
@@ -122,120 +125,28 @@ class UNetGenerator(gan.BaseGenerator):
         # Apply UNet-based Discriminator
         ################################
         # Compute output logit of D thinking image real
-        output, output_seg = netD(fake_images)
+        # output, output_seg = netD(fake_images)
+        output, _ = netD(fake_images)
 
         # Compute GAN loss
         errG = self.compute_gan_loss(output=output)
         # add Segmentation loss
-        errG += self.compute_seg_loss(output=output_seg)
+        # errG = errG + self.compute_seg_loss(output=output_seg)
 
-        # Backprop and update gradients
-        errG.backward()
+        # backprop
+        if self.is_amp:
+            with torch.autograd.set_detect_anomaly(True):
+                with amp.scale_loss(errG, optG) as scaled_loss:
+                    scaled_loss.backward()
+        else:
+            with torch.autograd.set_detect_anomaly(True):
+                errG.backward()
         optG.step()
 
         # Log statistics
         log_data.add_metric('errG', errG, group='loss')
 
         return log_data
-
-
-class UNetEncoderDiscriminator(nn.Module):
-    r"""
-    ResNet backbone Unet-based Encoder Discriminator.
-
-    Attributes:
-        ndf (int): Variable controlling discriminator feature map sizes.
-    """
-
-    def __init__(self, ndf=128):
-        super().__init__()
-        self.ndf = ndf
-
-        # build layers
-        self.block1 = DBlockOptimized(3, self.ndf)
-        self.block2 = DBlock(self.ndf, self.ndf, downsample=True)
-        self.block3 = DBlock(self.ndf, self.ndf, downsample=False)
-        self.block4 = DBlock(self.ndf, self.ndf, downsample=False)
-        self.activation = nn.ReLU(inplace=True)
-        self.l5 = SNLinear(self.ndf, 1)
-
-        # initialize weights
-        nn.init.xavier_uniform_(self.l5.weight.data, 1.0)
-
-        # self-attention
-        self.non_local_block = SelfAttention(self.ndf, spectral_norm=True)
-
-    def forward(self, x):
-        r"""
-        Feedforwards a batch of real/fake images and produces a batch of GAN logits.
-
-        Args:
-            x (Tensor): A batch of images of shape (N, C, H, W).
-
-        Returns:
-            logits (Tensor): A batch of GAN logits of shape (N, 1).
-            h1 (Tensor): block1 branch for decoder (B, ndf, 16, 16)
-            h2 (Tensor): block2 branch for decoder (B, ndf, 8, 8)
-            h3 (Tensor): block3 branch for decoder (B, ndf, 8, 8)
-            h4 (Tensor): block4 branch for decoder (B, ndf, 8, 8)
-        """
-
-        h = x
-        h1 = self.block1(h)
-        h2 = self.block2(h1)
-        h3 = self.block3(h2)
-        h3 = self.non_local_block(h3)
-        h4 = self.block4(h3)
-        h = self.activation(h4)
-
-        # global average pooling
-        h = torch.sum(h, dim=(2, 3))
-        logits = self.l5(h)
-
-        return logits, h1, h2, h3, h4
-
-
-class UNetDecoderDiscriminator(nn.Module):
-    r"""
-    ResNet backbone Unet-based Decoder Discriminator.
-
-    Attributes:
-        ndf (int): Variable controlling discriminator feature map sizes.
-    """
-
-    def __init__(self, ndf=128):
-        super().__init__()
-        self.ndf = ndf
-
-        self.block1 = DBlockDecoder(self.ndf, self.ndf, upsample=False)
-        self.block2 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=False)
-        self.block3 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=True)
-        self.block4 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=True)
-        self.activation = nn.ReLU(inplace=True)
-        self.c5 = SNConv2d(self.ndf, 1, kernel_size=3, stride=1, padding=1)
-
-    def forward(self, h1, h2, h3, h4):
-        r"""
-        Feedforwards a batch of real/fake images and produces a batch of GAN logits.
-
-        Args:
-            h1 (Tensor): block1 branch for encoder (B, ndf, 16, 16)
-            h2 (Tensor): block2 branch for encoder (B, ndf, 8, 8)
-            h3 (Tensor): block3 branch for encoder (B, ndf, 8, 8)
-            h4 (Tensor): block4 branch for encoder (B, ndf, 8, 8)
-
-        Returns:
-            logits (Tensor): A batch of Segmentation logits of shape (B, 1, 32, 32).
-        """
-
-        h = self.block1(h4)
-        h = self.block2(torch.cat((h, h3), dim=1))
-        h = self.block3(torch.cat((h, h2), dim=1))
-        h = self.block4(torch.cat((h, h1), dim=1))
-        h = self.activation(h)
-        logits = self.c5(h)
-
-        return logits
 
 
 class UNetDiscriminator(gan.BaseDiscriminator):
@@ -251,33 +162,67 @@ class UNetDiscriminator(gan.BaseDiscriminator):
         warmup (int): the warmup iteration count for linearly increasing the cutmix probability.
     """
 
-    def __init__(self, ndf=128, loss_type="ns", cutmix=False, consistency=False, warmup=None, **kwargs):
+    def __init__(self, ndf=128, loss_type="ns", is_amp=False, cutmix=False, consistency=False, warmup=50000, **kwargs):
         super().__init__(ndf=ndf, loss_type=loss_type, **kwargs)
-
-        assert self.loss_type == "ns", "yet, you can select [ns] only"
-
+        self.is_amp = is_amp
         self.cutmix = cutmix
         self.consistency = consistency
 
-        self.encoder = UNetEncoderDiscriminator(self.ndf)
-        self.decoder = UNetDecoderDiscriminator(self.ndf)
+        # build encoder
+        self.down1 = DBlockOptimized(3, self.ndf)
+        self.down2 = DBlock(self.ndf, self.ndf, downsample=True)
+        self.down3 = DBlock(self.ndf, self.ndf, downsample=False)
+        self.down4 = DBlock(self.ndf, self.ndf, downsample=False)
+        self.down_act = nn.ReLU(inplace=True)
+        self.down_l5 = SNLinear(self.ndf, 1)
+        # self-attention
+        self.non_local_block = SelfAttention(self.ndf, spectral_norm=True)
+        # initialize weights
+        nn.init.xavier_uniform_(self.down_l5.weight.data, 1.0)
+
+        # build decoder
+        self.up1 = DBlockDecoder(self.ndf, self.ndf, upsample=False)
+        self.up2 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=False)
+        self.up3 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=True)
+        self.up4 = DBlockDecoder(self.ndf * 2, self.ndf, upsample=True)
+        self.up_act = nn.ReLU(inplace=True)
+        self.up_c5 = SNConv2d(self.ndf, 1, kernel_size=3, stride=1, padding=1)
+        # initialize weights
+        nn.init.xavier_uniform_(self.up_c5.weight.data, 1.0)
 
     def forward(self, x):
         r"""
-        Feedforwards a batch of real/fake images and produces a batch of GAN/Segmentation logits.
+        Feedforwards a batch of real/fake images and produces a batch of GAN logits.
 
         Args:
             x (Tensor): A batch of images of shape (N, C, H, W).
 
         Returns:
             dis_logits (Tensor): A batch of GAN logits of shape (N, 1).
-            seg_logits (Tensor): A batch of Segmentation logits of shape (N, 1, 32, 32)
+            seg_logits (Tensor): A batch of Segmentation logits of shape (B, 1, 32, 32).
         """
 
-        dis_logits, h1, h2, h3, h4 = self.encoder(x)
-        seg_logits = self.decoder(h1, h2, h3, h4)
+        h1 = self.down1(x)
+        h2 = self.down2(h1)
+        h3 = self.down3(h2)
+        h3 = self.non_local_block(h3)
+        h4 = self.down4(h3)
+        # h = self.up1(h4)
+        # h = self.up2(torch.cat((h, h3), dim=1))
+        # h = self.up3(torch.cat((h, h2), dim=1))
+        # h = self.up4(torch.cat((h, h1), dim=1))
 
-        return dis_logits, seg_logits
+        # discriminative logits
+        dis_out = torch.sum(h4, dim=(2, 3))
+        dis_logits = self.down_l5(dis_out)
+
+        # segmentation logits
+        # seg_out = self.up_act(h)
+        # seg_logits = self.up_c5(seg_out)
+
+        # return dis_logits, seg_logits
+        return dis_logits, None
+
 
     def compute_seg_loss(self, output_real, output_fake, real_label_val=1.0, fake_label_val=0.0):
         r"""
@@ -344,20 +289,28 @@ class UNetDiscriminator(gan.BaseDiscriminator):
         # Apply UNet-based Discriminator
         ################################
         # Produce logits for real images
-        output_real, output_real_seg = self.forward(real_images)
+        # output_real, output_real_seg = self.forward(real_images)
+        output_real, _ = self.forward(real_images)
 
         # Produce logits for fake images
         output_fake, output_fake_seg = self.forward(fake_images)
+        output_fake, _ = self.forward(fake_images)
 
         # Compute loss for D
         errD = self.compute_gan_loss(output_real=output_real,
                                      output_fake=output_fake)
         # compute Segmentation loss
-        errD += self.compute_seg_loss(output_real=output_real_seg,
-                                      output_fake=output_fake_seg)
+        # errD = errD + self.compute_seg_loss(output_real=output_real_seg,
+        #                                     output_fake=output_fake_seg)
 
         # Backprop and update gradients
-        errD.backward()
+        if self.is_amp:
+            with torch.autograd.set_detect_anomaly(True):
+                with amp.scale_loss(errD, optD) as scaled_loss:
+                    scaled_loss.backward()
+        else:
+            with torch.autograd.set_detect_anomaly(True):
+                errD.backward()
         optD.step()
 
         # Compute probabilities
@@ -375,7 +328,35 @@ class UNetDiscriminator(gan.BaseDiscriminator):
 if __name__ == "__main__":
     inputs = torch.randn(10, 3, 32, 32)
 
-    netD = UNetDiscriminator(ndf=128, loss_type="ns")
+    # Discriminator forward
+    netD = UNetDiscriminator(ndf=128, loss_type="ns", is_amp=True)
     output, output_seg = netD(inputs)
     print(output.shape)
-    print(output_seg.shape)
+    # print(output_seg.shape)
+
+    # Discriminator backward
+    from torch.nn import functional as F
+    dis_loss = F.mse_loss(output, torch.ones((10, 1)))
+    seg_loss = F.mse_loss(output_seg, torch.ones((10, 1, 32, 32)))
+    loss = dis_loss + seg_loss
+    with torch.autograd.set_detect_anomaly(True):
+        loss.backward()
+
+    # Generator forward
+    noise = torch.randn(10, 128)
+    netG = UNetGenerator(nz=128, ngf=256, bottom_width=4, loss_type="ns", is_amp=True)
+    output = netG(noise)
+    print(output.shape)
+
+    # Generator backward
+    loss = F.mse_loss(output, torch.ones((10, 1, 32, 32)))
+    loss.backward()
+
+    from torch.optim import Adam
+    optG = Adam(netG.parameters(), lr=0.01)
+    optD = Adam(netD.parameters(), lr=0.01)
+
+    from torch_mimicry.training import MetricLog
+    log_data = MetricLog()
+
+    netG.train_step((inputs, ), netD, optG, log_data)

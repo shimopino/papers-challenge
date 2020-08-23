@@ -47,7 +47,8 @@
     "tabnine.tabnine-vscode",
     "coenraads.bracket-pair-colorizer-2",
     "christian-kohler.path-intellisense",
-    "njpwerner.autodocstring"
+    "njpwerner.autodocstring",
+    "ms-python.vscode-pylance"
   ],
   // Container作成後はProject直下のrequirements.txtをインストールする
   "postCreateCommand": "pip install --no-cache-dir  -r requirements.txt"
