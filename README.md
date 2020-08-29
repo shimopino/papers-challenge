@@ -177,6 +177,8 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
 <a id="markdown-gan-regularization" name="gan-regularization"></a>
 ### Regularization
 
+- [[arXiv:1903.05628] Mode Seeking Generative Adversarial Networks for Diverse Image Synthesis](https://arxiv.org/abs/1903.05628)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/207)
 - [[arXiv:1904.12848] Unsupervised Data Augmentation for Consistency Training](https://arxiv.org/abs/1904.12848)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/20)
 - [[arXiv:1910.12027] Consistency Regularization for Generative Adversarial Networks](https://arxiv.org/abs/1910.12027)
