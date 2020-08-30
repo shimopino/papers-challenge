@@ -141,8 +141,11 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/127)
 - [[arXiv:2005.13192] TIME: Text and Image Mutual-Translation Adversarial Networks](https://arxiv.org/abs/2005.13192)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/128)
+- [[arXiv:2008.05865] DF-GAN: Deep Fusion Generative Adversarial Networks for Text-to-Image Synthesis](https://arxiv.org/abs/2008.05865)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/202)
 - [[arXiv:2008.08976] Improving Text to Image Generation using Mode-seeking Function](https://arxiv.org/abs/2008.08976)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/206)
+
 
 <a id="markdown-speech2image" name="speech2image"></a>
 ### Speech-to-Image Translation
