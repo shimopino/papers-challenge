@@ -2,6 +2,69 @@
 
 ## 高速化などなど
 
+- データ読み込み時の工夫
+
+```python
+# 非同期読込のために num_workers > 0 かつ pin_memory=True がいい
+config = {'num_workers': 1, 'pin_memory': True}
+```
+
+- 決定論的な挙動ではなくなるが、cuDNNの最適化を有効にする。
+
+```python
+torch.backends.cudnn.benchmark = True
+```
+
+- バッチ正規化層の前の畳み込み層ではバイアスを使用しない
+
+```python
+# no
+layer = nn.Sequential(
+    nn.Conv2d(..., bias=True),
+    nn.BatchNorm2d(...)
+)
+
+# yes
+layer = nn.Sequential(
+    nn.Conv2d(..., bias=False),
+    nn.BatchNorm2d(...)
+)
+```
+
+- 勾配初期化時に、書き込みのみを行い
+
+```python
+# これは(read + write)な挙動
+model.zero_grad()
+
+# これは(write)のみの挙動
+for param in model.parameters():
+    param.grad = None
+```
+
+- 複数のGPUを使用する際は、プロセスの並列に実行させる
+
+```python
+# no
+DataParallel
+
+# yes
+DistributedDataParallel
+```
+
+- apexを使う
+
+- 順伝播時に必要な演算に関する出力のみを保存する
+
+```python
+# activation (ReLU, Sigmoid, ...)
+# Up / Down Sampling
+# Matrix-vector ops with small accumulation depth
+torch.utils.checkpoint
+```
+
+### 参考文献
+
 - [PyTorch Performance Guide](https://nvlabs.github.io/eccv2020-mixed-precision-tutorial/)
 
 ## GAN
