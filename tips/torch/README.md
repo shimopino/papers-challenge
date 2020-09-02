@@ -1,5 +1,9 @@
 # PyTorchでの実装メモ
 
+## 高速化などなど
+
+- [PyTorch Performance Guide](https://nvlabs.github.io/eccv2020-mixed-precision-tutorial/)
+
 ## GAN
 
 ### ResBlock
