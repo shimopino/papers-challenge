@@ -9,6 +9,23 @@
 config = {'num_workers': 1, 'pin_memory': True}
 ```
 
+- 非同期でのCPU-GPU間通信
+
+```python
+for data, target in loader:
+    # Overlapping transfer if pinned memory
+    data = data.to('cuda:0', non_blocking=True)
+    target = target.to('cuda:0', non_blocking=True)
+
+    # The following code will be called asynchronously,
+    # such that the kernel will be launched and returns control 
+    # to the CPU thread before the kernel has actually begun executing
+    output = model(data)  # has to wait for data to be pushed onto device (synch point)
+    loss = criterion(output, target)
+    loss.backward()
+    optimizer.step()
+```
+
 - 決定論的な挙動ではなくなるが、cuDNNの最適化を有効にする。
 
 ```python
@@ -66,6 +83,7 @@ torch.utils.checkpoint
 ### 参考文献
 
 - [PyTorch Performance Guide](https://nvlabs.github.io/eccv2020-mixed-precision-tutorial/)
+- [https://twitter.com/karpathy/status/1299921324333170689](https://twitter.com/karpathy/status/1299921324333170689)
 
 ## GAN
 
