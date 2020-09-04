@@ -25,29 +25,50 @@
 > mkdir -p /home/username/workspace/vs-remote
 
 # local host
-scp <file> <username>@<hostname>:/home/username/workspace/vs-remote
+> scp <file> <username>@<hostname>:/home/username/workspace/vs-remote
 ```
 
 リモート上にファイルが転送されているかどうかを確認する。
 
 ### VSCode Remote Container の設定
 
-次にDockerの設定をローカルコンピュータ上で実施する。
-ポイントとしては、コンテナの設定を記述する`devcontainer.json`はリモート端末上に配置する必要がある点である。
+次にリモートサーバ上で起動するコンテナの設定を行う。
 
-この際に、以下のような設定を行い、リモート端末上で可動しているDockerコンテナが、リモートに存在するファイルシステムにマウントを取っておくことで、リモートのファイルに直接アクセスすることなく編集を行うことができる。
+このときはローカルの`devcontainer.json`に対して設定を記述する。
+この際に、DockerのファイルシステムとVSCodeの提供している機能上、データをアクセスするために2つの手法をとることができる。
+
+1つ目は**Named Valume**によるアクセスであり、以下のように設定を行うことでDockerが管理するファイル領域にアクセスすることになり、直接ディレクトリ内のファイルなどにアクセスすることはなくなる。
 
 ```json
 {
-  "image": "node", // Or "dockerFile"
+  "image": "ubuntu-remote-test:0.0.1", // Or "dockerFile"
+  // コンテナ起動時にアクセスする場所
+  // デフォルトではDockerホスト上の`/workspace`で起動する
   "workspaceFolder": "/workspace",
+  // sourceで指定されたNamed Volumneを、targetで指定しているパスにマウントする
   "workspaceMount": "source=remote-workspace,target=/workspace,type=volume"
 }
 ```
 
-これは、コマンド`Remote-Containers: Open Repository in Container...`を実行しても同じ挙動になる`a。
+後は`Remote-Containers: Open Repository in Container...`を実行すればリモートホスト上のDockerコンテナにアクセスすることができる。
+
+次は、リモートサーバ上の特定のディレクトリに存在するファイルを直接**bind mount**する方法である。
+この場合には、リモートサーバ上のファイルに直接アクセスを行い編集することができる。
+
+```json
+{
+  "image": "ubuntu-remote-test:0.0.1", // Or "dockerFile"
+  // コンテナ起動時にアクセスする場所
+  "workspaceFolder": "/workspace",
+  // 絶対パスで指定されたsourceを、targetで指定されているコンテナ上のディレクトリにバインドする
+  "workspaceMount": "source=/home/leimao/Workspace/vs-remote-workspace/,target=/workspace,type=bind,consistency=cached",
+}
+```
+
+後は`Remote-Containers: Open Folder in Container...`を実行すればリモートホスト上のDockerコンテナにアクセスすることができる。
 
 ## 参照記事
 
+- [Use Volumes](https://docs.docker.com/storage/volumes/)
 - [Developing inside a container on a remote Docker host](https://code.visualstudio.com/docs/remote/containers-advanced#_developing-inside-a-container-on-a-remote-docker-host)
 - [VS Code Development Using Docker Containers on Remote Host](https://leimao.github.io/blog/VS-Code-Development-Remote-Host-Docker/)
