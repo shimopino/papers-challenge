@@ -6,6 +6,8 @@
 
 ## 基本的な接続方法
 
+### SSHの設定
+
 リモート端末で起動しているDockerコンテナに、VSCodeをAttachして開発を行う際には、単純に`.vscode`フォルダ配下の`settings.json`にて、以下の設定を追加して、VSCodeを再起動すればい。
 
 ```json
@@ -14,7 +16,23 @@
 
 接続には鍵認証方式でのSSH接続を行うため、予め公開鍵・秘密鍵の準備は行っておく。
 
-次にリモート上で起動するDockerの設定を行う。
+### リモートホストの準備
+
+次にリモートホスト上に、ローカルに存在するファイルを転送するための設定を行う
+
+```sh
+# remote host
+> mkdir -p /home/username/workspace/vs-remote
+
+# local host
+scp <file> <username>@<hostname>:/home/username/workspace/vs-remote
+```
+
+リモート上にファイルが転送されているかどうかを確認する。
+
+### VSCode Remote Container の設定
+
+次にDockerの設定をローカルコンピュータ上で実施する。
 ポイントとしては、コンテナの設定を記述する`devcontainer.json`はリモート端末上に配置する必要がある点である。
 
 この際に、以下のような設定を行い、リモート端末上で可動しているDockerコンテナが、リモートに存在するファイルシステムにマウントを取っておくことで、リモートのファイルに直接アクセスすることなく編集を行うことができる。
