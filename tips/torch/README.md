@@ -85,6 +85,42 @@ torch.utils.checkpoint
 - [PyTorch Performance Guide](https://nvlabs.github.io/eccv2020-mixed-precision-tutorial/)
 - [https://twitter.com/karpathy/status/1299921324333170689](https://twitter.com/karpathy/status/1299921324333170689)
 
+## Mixed Precision package
+
+pytorchのバージョン1.6以上では、標準で`torch.cuda.amp`が搭載されている。
+
+`torch.cuda.amp.autocast`や`torch.cuda.amp.GradScaler`などが用意されており、以下のような使い方が想定されている。
+
+```python
+model = Net().cuda()
+optimizer = optim.SGD(model.parameters(), ...)
+
+# 学習前にGradScaler()をインスタンス化させておく
+scaler = GradScaler()
+
+for epoch in epochs:
+    for input, target in data:
+        optimizer.zero_grad()
+        
+        # 順伝搬時にautocastを行い32ビット演算と16ビット演算を自動的に実行
+        with autocast():
+            output = model(input)
+            loss = loss_fn(output, target)
+            
+        # 順伝搬と同様の型で勾配計算を実行する
+        scaler.scale(loss).backward()
+        
+        # scaleされた勾配をもとのscaleに変換する
+        scaler.step(optimizer)
+        
+        scaler.update()        
+```
+
+### 参考文献
+
+- [AUTOMATIC MIXED PRECISION PACKAGE - TORCH.CUDA.AMP](https://pytorch.org/docs/stable/amp.html#module-torch.cuda.amp)
+- [AUTOMATIC MIXED PRECISION EXAMPLES](https://pytorch.org/docs/stable/notes/amp_examples.html#amp-examples)
+
 ## GAN
 
 ### ResBlock
