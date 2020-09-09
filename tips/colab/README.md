@@ -16,6 +16,8 @@ setInterval(ClickButton, 60000) // set 60,000 millisecond
 
 ## VSCode Server on Colab
 
+### User Pure ngrok
+
 You can run VSCode Server on Colab notebook.
 
 ```python
@@ -79,6 +81,15 @@ ssh -L 9999:localhost:9999 root@0.tcp.ngrok.io -p 14407
 - [Colab on steroids: free GPU instances with SSH access and Visual Studio Code Server](https://towardsdatascience.com/colab-free-gpu-ssh-visual-studio-code-server-36fe1d3c5243)
 - [chezou/code-server.ipynb](https://gist.github.com/chezou/858d663381625c9bb1c868e0c95969c6)
 - [ngrok](https://dashboard.ngrok.com/get-started/setup)
+
+### Use third-party library
+
+```python
+!pip install colabcode
+
+from colabcode import ColabCode
+ColabCode(port=10000, password="sample")a
+```
 
 ## External Data
 
