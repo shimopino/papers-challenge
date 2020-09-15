@@ -96,3 +96,26 @@ ColabCode(port=10000, password="sample")a
 ## External Data
 
 - [外部データ: ローカル ファイル、ドライブ、スプレッドシート、Cloud Storage](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=F1-nafvN-NwW)
+
+## Colabのバージョン情報
+
+以下に2020年9月15日時点での各ソフトウェアのバージョン情報を載せる
+
+```python
+$ gcc --version
+> gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+
+$ lsb_release -a
+> Description:	Ubuntu 18.04.5 LTS
+
+$ nvidia-smi
+> Driver Version: 418.67
+
+$ nvcc -V
+> Cuda compilation tools, release 10.1, V10.1.243
+
+$ cat /usr/include/cudnn.h | grep CUDNN_MAJOR -A 2
+> #define CUDNN_MAJOR 7
+> #define CUDNN_MINOR 6
+> #define CUDNN_PATCHLEVEL 5
+```
