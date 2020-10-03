@@ -29,7 +29,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Denoising](#denoising)
     - [Disentanglement](#disentanglement)
     - [Regularization](#gan-regularization)
-    - [GAN Architecture Search](#gan-architecture-search)
+    - [Compression](#gan-compression)
     - [Survey](#survey)
     - [Variational AutoEncoder](#vae)
   - [Computer Vision](#computer-vision)
@@ -208,12 +208,14 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/158)
 
 
-<a id="markdown-gan-arch-search" name="gan-arch-search"></a>
-### GAN Architecture Search
+<a id="markdown-gan-compression" name="gan-compression"></a>
+### Compression
 - [[arXiv:2003.08936] GAN Compression: Efficient Architectures for Interactive Conditional GANs](https://arxiv.org/abs/2003.08936)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/48)
 - [[arXiv:2006.08198] AutoGAN-Distiller: Searching to Compress Generative Adversarial Networks](https://arxiv.org/abs/2006.08198)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/154)
+- [[arXiv:2009.13829] TinyGAN: Distilling BigGAN for Conditional Image Generation](https://arxiv.org/abs/2009.13829)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/216)
 
 <a id="markdown-gan-survey" name="gan-survey"></a>
 ### Survey
