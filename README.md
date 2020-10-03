@@ -19,6 +19,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
   - [TOC](#toc)
   - [Generative Models](#generative-models)
     - [Image Generation](#image-generation)
+    - [Few-Shot Image Generation](#few-shot-image-generation)
     - [Self-Supervised](#ss-gan)
     - [Image-to-Image Translation](#image-to-image-translation)
     - [Text-to-Image Translation](#text-to-image-translation)
@@ -85,6 +86,12 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/168)
 - [[arXiv:2007.06600] Closed-Form Factorization of Latent Semantics in GANs](https://arxiv.org/abs/2007.06600)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/180)
+
+<a id="markdown-few-shot-image-generation" name="few-shot-image-generation"></a>
+### Few-Shot Image Generation
+
+- [[arXiv:2009.08753] DeltaGAN: Towards Diverse Few-shot Image Generation with Sample-Specific Delta](https://arxiv.org/abs/2009.08753)
+  - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/218)
 
 <a id="markdown-ss-gan" name="ss-gan"></a>
 ### Self Supervised
