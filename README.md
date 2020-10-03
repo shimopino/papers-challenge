@@ -42,6 +42,7 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [Anomaly Detection](#anomaly-detection)
   - [Natural Language Processing](#natural-language-processing)
     - [Transformers](#transformers)
+    - [Data Augmentation](#nlp-data-aug)
     - [Survey](#survey-1)
   - [Tabular](#tabular)
     - [Concept Shift](#concept-shift)
@@ -311,6 +312,12 @@ To take full advantage of VSCode's features, choose HTTPS when you clone this re
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/96)
 - [[arXiv:2005.00743] Synthesizer: Rethinking Self-Attention in Transformer Models](https://arxiv.org/abs/2005.00743)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/109)
+    
+<a id="markdown-nlp-data-aug" name="nlp-data-aug"></a>
+### Data Augmentation
+
+- [[arXiv:2009.13818] A Simple but Tough-to-Beat Data Augmentation Approach for Natural Language Understanding and Generation](https://arxiv.org/abs/2009.13818)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/219)
     
 <a id="markdown-nlp-survey" name="nlp-survey"></a>
 ### Survey
