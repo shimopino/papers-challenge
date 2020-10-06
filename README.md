@@ -1,16 +1,16 @@
 # Paper Reading List
 
-useful tool is here
+useful tools
 
 - [https://tex-image-link-generator.herokuapp.com/](https://tex-image-link-generator.herokuapp.com/)
 
 ## experiments
 
-Reproduction experiments for each paper were conducted on VSCode and Colab. In the top hierarchy of this repository, I have added a template configuration file for development using the Remote Container function of VSCode.
+The experiments in this repository have been conducted in Colab and also on my desktop.
 
-To run the experiment, please call the "Open Repository in Container" and run the file in a separate Git environment.
+We also use VSCode's Remote-Development function and Docker to construct the environment for experiments in the paper.
 
-To take full advantage of VSCode's features, choose HTTPS when you clone this repository.
+In this repository, we are experimenting on a Docker container running under a remote GPU environment, and accessing the remote terminal from a local VSCode. If you want to run your experiments in this environment, please refer to the tips/vscode/RemoteDevelopment folder.
 
 ## TOC
 
