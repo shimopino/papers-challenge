@@ -29,3 +29,4 @@ TODO: 以下に列挙した比較手法は，後ほどカテゴリごとに分�
 - bCR, zCR
 - ADA
 - Data-Efficient GAN
+- LOGAN
