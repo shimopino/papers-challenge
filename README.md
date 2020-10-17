@@ -246,6 +246,8 @@ In this repository, we are experimenting on a Docker container running under a r
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/94)
 - [[arXiv:2003.00152] Training BatchNorm and Only BatchNorm: On the Expressive Power of Random Features in CNNs](https://arxiv.org/abs/2003.00152)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/102)
+- [[arXiv:2010.05981] Shape-Texture Debiased Neural Network Training](https://arxiv.org/abs/2010.05981)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/227)
 
 <a id="markdown-cv-arch" name="cv-arch"></a>
 ### Architecture
