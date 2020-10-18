@@ -139,19 +139,37 @@ class DCGANDiscriminator(gan.BaseDiscriminator):
         h = self.layer6(h)
 
         # [B, 1, 1, 1] --> [B, 1] --> [B]
-        return h.view(-1, 1).squeeze(1)
+        return h.view(-1, 1)
 
 
 if __name__ == "__main__":
 
     import torch
 
+    batch_size = 10
+    nz = 128
+    nc = 3
+    image_size = 128
+
     netG = DCGANGenerator()
     print(netG)
 
-    print(netG(torch.randn(10, 128)).shape)
+    print(netG(torch.randn(batch_size, nz)).shape)
 
     netD = DCGANDiscriminator()
     print(netD)
 
-    print(netD(torch.randn(10, 3, 128, 128)).shape)
+    print(netD(torch.randn(batch_size, nc, image_size, image_size)).shape)
+
+    import torch.nn.functional as F
+
+    input_noise = torch.randn(batch_size, nz)
+    fake_images = netG(input_noise)
+    output_fake = netD(fake_images)
+
+    fake_labels = torch.full(size=(output_fake.shape[0], 1),
+                              fill_value=0.0,
+                              device=output_fake.device)
+
+    loss = F.binary_cross_entropy_with_logits(output_fake, fake_labels)    
+    print(loss)
