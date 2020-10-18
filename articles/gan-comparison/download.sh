@@ -8,7 +8,7 @@ IS_ADDED=false
 
 if [ $DATASET = "anime-face" ]; then
 
-    if [[ ! -d "$TARGET_DIR" ]]; then
+    if [[ ! -d "$TARGET_DIR/animeface-character-dataset/thumb" ]]; then
 
         # anime-faces
         # http://www.nurs.or.jp/~nagadomi/animeface-character-dataset/
