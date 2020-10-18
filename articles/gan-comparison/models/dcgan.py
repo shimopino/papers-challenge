@@ -168,8 +168,8 @@ if __name__ == "__main__":
     output_fake = netD(fake_images)
 
     fake_labels = torch.full(size=(output_fake.shape[0], 1),
-                              fill_value=0.0,
-                              device=output_fake.device)
+                             fill_value=0.0,
+                             device=output_fake.device)
 
     loss = F.binary_cross_entropy_with_logits(output_fake, fake_labels)    
     print(loss)
