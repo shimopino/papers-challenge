@@ -102,6 +102,8 @@ In this repository, we are experimenting on a Docker container running under a r
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/124)
 - [[arXiv:2006.10728] Diverse Image Generation via Self-Conditioned GANs](https://arxiv.org/abs/2006.10728)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/156)
+- [[arXiv:2010.09893] LT-GAN: Self-Supervised GAN with Latent Transformation Detection](https://arxiv.org/abs/2010.09893)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/231)
 
 <a id="markdown-image-to-image-translation" name="image-to-image-translation"></a>
 ### Image-to-Image Translation
