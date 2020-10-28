@@ -236,6 +236,8 @@ In this repository, we are experimenting on a Docker container running under a r
 <a id="markdown-learn-strg" name="learn-strg"></a>
 ### Learning Strategy
 
+- [[arXiv:1901.04596] AET vs. AED: Unsupervised Representation Learning by Auto-Encoding Transformations rather than Data](https://arxiv.org/abs/1901.04596)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/232)
 - [[arXiv:1907.08610] Lookahead Optimizer: k steps forward, 1 step back](https://arxiv.org/abs/1907.08610)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/167)
 - [[arXiv:1911.05722] Momentum Contrast for Unsupervised Visual Representation Learning](https://arxiv.org/abs/1911.05722)
