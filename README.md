@@ -287,7 +287,7 @@ In this repository, we are experimenting on a Docker container running under a r
 - [[arXiv:1909.09148] Data Augmentation Revisited: Rethinking the Distribution Gap between Clean and Augmented Data](https://arxiv.org/abs/1909.09148)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/188)
 - [[arXiv:1909.12220] Implicit Semantic Data Augmentation for Deep Networks](https://arxiv.org/abs/1909.12220)
-    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/4)
+    - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/188)
 - [[arXiv:2002.11102] On Feature Normalization and Data Augmentation](https://arxiv.org/abs/2002.11102)
     - [issue](https://github.com/KeisukeShimokawa/papers-challenge/issues/51)
 
